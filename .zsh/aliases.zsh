@@ -13,9 +13,13 @@ fi
 alias ls='ls --color=auto'
 
 # vim using
+lvim --version > /dev/null 2>&1
+LVIM_INSTALLED=$?
 nvim --version > /dev/null 2>&1
 NEOVIM_INSTALLED=$?
-if [ $NEOVIM_INSTALLED -eq 0 ]; then
+if [ $LVIM_INSTALLED -eq 0 ]; then
+  alias vim="lvim"
+elif [ $NEOVIM_INSTALLED -eq 0 ]; then
   alias vim="nvim"
 fi
 
