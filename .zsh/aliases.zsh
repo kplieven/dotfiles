@@ -1,9 +1,15 @@
 ## Git dotfiles
-alias config="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
+alias config="git --git-dir=$HOME/.dotfiles/.git --work-tree=$HOME"
 
 alias icat='kitty +kitten icat'
 
-alias ll='ls -alh --color=auto'
+which exa > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+  alias ll='exa -lbh --icons --color=auto --group-directories-first'
+else
+  alias ll='ls -alh --color=auto'
+fi
+
 alias ls='ls --color=auto'
 
 # vim using
