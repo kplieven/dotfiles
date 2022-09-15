@@ -50,3 +50,6 @@ alias gr='git remote --verbose'
 ## Git Submodule
 alias gS='git submodule'
 alias gSuir='git submodule update --init --recursive'
+
+# Barco
+alias sshphoenix='ssh root@10.200.18.80'
