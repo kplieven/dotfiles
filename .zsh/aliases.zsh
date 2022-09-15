@@ -37,6 +37,8 @@ alias gi='vim .gitignore'
 alias gd='git diff'
 alias gb='git branch'
 alias gco='git checkout'
+alias glog='git log --graph --oneline --decorate'
+alias gau='git add -u'
 
 ## Git Push / Pull
 alias gp='git push'
