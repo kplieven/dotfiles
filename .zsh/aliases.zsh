@@ -52,4 +52,4 @@ alias gS='git submodule'
 alias gSuir='git submodule update --init --recursive'
 
 # Barco
-alias sshphoenix='ssh root@10.200.18.80'
+alias sshphoenix='sshpass -p letmein ssh root@10.200.18.80'
