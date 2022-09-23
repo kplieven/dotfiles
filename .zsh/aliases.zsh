@@ -39,6 +39,7 @@ alias gb='git branch'
 alias gco='git checkout'
 alias glog='git log --graph --oneline --decorate'
 alias gau='git add -u'
+alias gcan='git commit --amend --no-edit'
 
 ## Git Push / Pull
 alias gp='git push'
