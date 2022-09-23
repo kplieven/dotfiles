@@ -46,10 +46,11 @@ alias gpA='git push --all && git push --tags'
 alias gpl='git pull'
 alias gf='git fetch'
 alias gr='git remote --verbose'
+alias gpfwl='git push --force-with-lease'
 
 ## Git Submodule
 alias gS='git submodule'
 alias gSuir='git submodule update --init --recursive'
 
 # Barco
-alias sshphoenix='sshpass -p letmein ssh root@10.200.18.80'
+alias sshphoenix='sshpass -p letmein ssh root@10.200.18.72'
