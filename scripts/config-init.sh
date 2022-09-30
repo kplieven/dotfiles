@@ -11,7 +11,7 @@ function config {
 # create a directory to backup existing dotfiles to
 mkdir -p .dotfiles-backup
 config checkout
-if [ $? = 0]; then
+if [ $? = 0 ]; then
   echo "Checked out fotiles from git@github.com:kplieven/dotfiles.git"
 else
   echo "Moving existing dotfiles to ~/.dotfiles-backup"
