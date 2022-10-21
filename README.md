@@ -307,8 +307,15 @@ After install add the bin folder to path:
 ```
 
 ### Deb files
-- [Google Chrome](https://www.google.com/intl/nl/chrome/)
-- [Discord](https://discord.com/download)
+- Google Chrome
+    ```zsh
+    ❯ wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    ❯ sudo dpkg -i google-chrome-stable_current_amd64.deb```
+- Discord
+    ```zsh
+    ❯ wget -O discord.deb https://discord.com/api/download?platform=linux&format=deb
+    ❯ sudo dpkg -i discord.deb
+    ```
 
 ### Flatpak
 - [Telegram](https://desktop.telegram.org/)
