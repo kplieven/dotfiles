@@ -11,7 +11,7 @@ an executable
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save = true
-lvim.colorscheme = "tokyonight"
+-- lvim.colorscheme = "tokyonight"
 -- to disable icons and use a minimalist setup, uncomment the following
 -- lvim.use_icons = false
 
@@ -26,9 +26,9 @@ lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 
 vim.opt.relativenumber = true
 vim.opt.wrap = true
-vim.opt.tabstop = 2
-vim.opt.sts = 2
-vim.opt.sw = 2
+-- vim.opt.tabstop = 2
+-- vim.opt.sts = 2
+-- vim.opt.sw = 2
 
 -- Change Telescope navigation to use j and k for navigation and n and p for history in both input and normal mode.
 -- we use protected-mode (pcall) just in case the plugin wasn't loaded yet.
