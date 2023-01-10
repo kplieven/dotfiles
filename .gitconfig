@@ -1,33 +1,33 @@
 [pull]
-	rebase = true
+    rebase = true
 [user]
-	email = karel.lievens@barco.com
-	name = Lievens, Karel
+    email = karel.lievens@barco.com
+    name = Lievens, Karel
 [core]
-	editor = lvim
+    editor = lvim
 [rebase]
-  autosquash = true
+    autosquash = true
 [alias]
 # Git Aliases
-  st = status
-  d = diff
-  b = branch
-  co = checkout
-  glog = log --graph --oneline --decorate
-  au = add -u
-  can = commit --amend --no-edit
-  cf = commit --fix
-  r = reset
-  rh = reset --hard
+    st = status
+    d = diff
+    b = branch
+    co = checkout
+    glog = log --graph --oneline --decorate
+    au = add -u
+    can = commit --amend --no-edit
+    cf = commit --fix
+    r = reset
+    rh = reset --hard
 
 ## Git Push / Pull
-  p = push
-  pl = pull
-  f = fetch
-  r = remote --verbose
-  pfwl = push --force-with-lease
+    p = push
+    pl = pull
+    f = fetch
+    r = remote --verbose
+    pfwl = push --force-with-lease
 
 ## Git Submodule
-  S = submodule
-  Suir = submodule update --init --recursive
+    S = submodule
+    Suir = submodule update --init --recursive
 
