@@ -73,37 +73,20 @@ lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
 
-lvim.builtin.which_key.mappings["t"] = {
-  name = "Diagnostics",
-  t = { "<cmd>TroubleToggle<cr>", "trouble" },
-  w = { "<cmd>TroubleToggle workspace_diagnostics<cr>", "workspace" },
-  d = { "<cmd>TroubleToggle document_diagnostics<cr>", "document" },
-  q = { "<cmd>TroubleToggle quickfix<cr>", "quickfix" },
-  l = { "<cmd>TroubleToggle loclist<cr>", "loclist" },
-  r = { "<cmd>TroubleToggle lsp_references<cr>", "references" },
-}
-
-lvim.builtin.which_key.mappings["D"] = {
-  name = "Duck",
-  d = { "spawn duck" },
-  m = { "spawn dog" },
-  k = { "cook" },
-}
-
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
-  "bash",
-  "c",
-  "javascript",
-  "json",
-  "lua",
-  "python",
-  "typescript",
-  "tsx",
-  "css",
-  "rust",
-  "java",
-  "yaml",
+    "bash",
+    "c",
+    "javascript",
+    "json",
+    "lua",
+    "python",
+    "typescript",
+    "tsx",
+    "css",
+    "rust",
+    "java",
+    "yaml",
 }
 
 lvim.builtin.treesitter.ignore_install = { "haskell" }
@@ -186,67 +169,122 @@ lvim.builtin.treesitter.highlight.enabled = true
 
 -- Additional Plugins
 lvim.plugins = {
-  { "psliwka/vim-smoothie" },
-  {
-    "tpope/vim-fugitive",
-    cmd = {
-      "G",
-      "Git",
-      "Gdiffsplit",
-      "Gread",
-      "Gwrite",
-      "Ggrep",
-      "GMove",
-      "GDelete",
-      "GBrowse",
-      "GRemove",
-      "GRename",
-      "Glgrep",
-      "Gedit"
+    { "psliwka/vim-smoothie" },
+    {
+        "tpope/vim-fugitive",
+        cmd = {
+            "G",
+            "Git",
+            "Gdiffsplit",
+            "Gread",
+            "Gwrite",
+            "Ggrep",
+            "GMove",
+            "GDelete",
+            "GBrowse",
+            "GRemove",
+            "GRename",
+            "Glgrep",
+            "Gedit"
+        },
+        ft = { "fugitive" }
     },
-    ft = { "fugitive" }
-  },
-  {
-    "echasnovski/mini.map",
-    branch = "stable",
-    config = function()
-      require('mini.map').setup()
-      local map = require('mini.map')
-      map.setup({
-        integrations = {
-          map.gen_integration.builtin_search(),
-          map.gen_integration.diagnostic({
-            error = 'DiagnosticFloatingError',
-            warn  = 'DiagnosticFloatingWarn',
-            info  = 'DiagnosticFloatingInfo',
-            hint  = 'DiagnosticFloatingHint',
-          }),
-        },
-        symbols = {
-          encode = map.gen_encode_symbols.dot('4x2'),
-        },
-        window = {
-          side = 'right',
-          width = 20, -- set to 1 for a pure scrollbar :)
-          winblend = 15,
-          show_integration_count = false,
-        },
-      })
-    end
-  },
-  {
-    "folke/trouble.nvim",
-    cmd = "TroubleToggle",
-  },
-  {
-    'tamton-aquib/duck.nvim',
-    config = function()
-      vim.keymap.set('n', '<leader>Dd', function() require("duck").hatch() end, {})
-      vim.keymap.set('n', '<leader>Dm', function() require("duck").hatch("🐕", 0.75) end, {})
-      vim.keymap.set('n', '<leader>Dk', function() require("duck").cook() end, {})
-    end
-  },
+    {
+        "echasnovski/mini.map",
+        branch = "stable",
+        config = function()
+            require('mini.map').setup()
+            local map = require('mini.map')
+            map.setup({
+                integrations = {
+                    map.gen_integration.builtin_search(),
+                    map.gen_integration.diagnostic({
+                        error = 'DiagnosticFloatingError',
+                        warn  = 'DiagnosticFloatingWarn',
+                        info  = 'DiagnosticFloatingInfo',
+                        hint  = 'DiagnosticFloatingHint',
+                    }),
+                },
+                symbols = {
+                    encode = map.gen_encode_symbols.dot('4x2'),
+                },
+                window = {
+                    side = 'right',
+                    width = 20, -- set to 1 for a pure scrollbar :)
+                    winblend = 15,
+                    show_integration_count = false,
+                },
+            })
+        end
+    },
+    {
+        "folke/trouble.nvim",
+        cmd = "TroubleToggle",
+    },
+    {
+        'tamton-aquib/duck.nvim',
+        config = function()
+            vim.keymap.set('n', '<leader>Dd', function() require("duck").hatch() end, {})
+            vim.keymap.set('n', '<leader>Dm', function() require("duck").hatch("🐕", 0.5) end, {})
+            vim.keymap.set('n', '<leader>Dk', function() require("duck").cook() end, {})
+        end
+    },
+    -- {
+    --     "andrewferrier/debugprint.nvim",
+    --     config = function()
+    --         require("debugprint").setup({create_keymaps = false, create_commands = false})
+    --     end,
+    -- },
 }
+
+-- Plugin whichkey
+lvim.builtin.which_key.mappings["t"] = {
+    name = "Diagnostics",
+    t = { "<cmd>TroubleToggle<cr>", "trouble" },
+    w = { "<cmd>TroubleToggle workspace_diagnostics<cr>", "workspace" },
+    d = { "<cmd>TroubleToggle document_diagnostics<cr>", "document" },
+    q = { "<cmd>TroubleToggle quickfix<cr>", "quickfix" },
+    l = { "<cmd>TroubleToggle loclist<cr>", "loclist" },
+    r = { "<cmd>TroubleToggle lsp_references<cr>", "references" },
+}
+
+lvim.builtin.which_key.mappings["D"] = {
+    name = "Duck",
+    d = { "spawn duck" },
+    m = { "spawn dog" },
+    k = { "cook" },
+}
+
+-- lvim.builtin.which_key.mappings["G"] = {
+--     name = "Debugprint",
+--     p = { "Add simple debug print" },
+--     v = { "Add variable debug print" },
+--     d = { "Delete all prints" },
+-- }
+
+-- Plugin keymaps
+-- debugprint
+-- vim.keymap.set("n", "<Leader>Gp", function()
+--     require('debugprint').debugprint()
+-- end)
+-- vim.keymap.set("n", "<Leader>GP", function()
+--     require('debugprint').debugprint({above = true})
+-- end)
+-- vim.keymap.set("n", "<Leader>Gv", function()
+--     require('debugprint').debugprint({variable = true})
+-- end)
+-- vim.keymap.set("n", "<Leader>GV", function()
+--     require('debugprint').debugprint({above = true, variable = true})
+-- end)
+-- vim.keymap.set("v", "<Leader>Gv", function()
+--     require('debugprint').debugprint({variable = true})
+-- end)
+-- vim.keymap.set("v", "<Leader>GV", function()
+--     require('debugprint').debugprint({above = true, variable = true})
+-- end)
+-- vim.keymap.set("n", "<Leader>Gd", function()
+--     require('debugprint').deleteprints()
+-- end)
 
 -- Autocommands (https://neovim.io/doc/user/autocmd.html)
 -- vim.api.nvim_create_autocmd("BufEnter", {
@@ -262,29 +300,29 @@ lvim.plugins = {
 --   end,
 -- })
 lvim.autocommands = {
-  {
-    { "BufEnter", "Filetype" },
     {
-      desc = "Open mini.map and exclude some filetypes",
-      pattern = { "*" },
-      callback = function()
-        local exclude_ft = {
-          "qf",
-          "NvimTree",
-          "toggleterm",
-          "TelescopePrompt",
-          "alpha",
-          "netrw",
-        }
+        { "BufEnter", "Filetype" },
+        {
+            desc = "Open mini.map and exclude some filetypes",
+            pattern = { "*" },
+            callback = function()
+                local exclude_ft = {
+                    "qf",
+                    "NvimTree",
+                    "toggleterm",
+                    "TelescopePrompt",
+                    "alpha",
+                    "netrw",
+                }
 
-        local map = require('mini.map')
-        if vim.tbl_contains(exclude_ft, vim.o.filetype) then
-          vim.b.minimap_disable = true
-          map.close()
-        elseif vim.o.buftype == "" then
-          map.open()
-        end
-      end,
+                local map = require('mini.map')
+                if vim.tbl_contains(exclude_ft, vim.o.filetype) then
+                    vim.b.minimap_disable = true
+                    map.close()
+                elseif vim.o.buftype == "" then
+                    map.open()
+                end
+            end,
+        },
     },
-  },
 }
