@@ -1,0 +1,24 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Inserts a blank line between shell prompts
+add_newline = false
+right_format = "$time"
+
+[time]
+disabled = false
+style = "bold bright-black"
+format = "[$time]($style)"
+
+[line_break]
+disabled = true
+
+[git_branch]
+style = "bold purple"
+format = "[$branch(:$remote_branch)]($style) "
+
+[python]
+disabled = true
+
+[cmake]
+disabled = true
