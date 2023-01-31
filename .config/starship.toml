@@ -10,9 +10,6 @@ disabled = false
 style = "bold bright-black"
 format = "[$time]($style)"
 
-[cmd_duration]
-show_notifications = true
-
 [line_break]
 disabled = true
 
