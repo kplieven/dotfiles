@@ -15,6 +15,7 @@
     co = checkout
     glog = log --graph --oneline --decorate
     au = add -u
+    cm = commit -m
     can = commit --amend --no-edit
     cf = commit --fix
     r = reset
