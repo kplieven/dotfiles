@@ -72,6 +72,7 @@ lvim.builtin.notify.active = true
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
+lvim.builtin.dap.active = true;
 
 -- if you don't want all the parsers change this to a table of the ones you want
 lvim.builtin.treesitter.ensure_installed = {
@@ -167,6 +168,60 @@ lvim.builtin.treesitter.highlight.enabled = true
 --   },
 -- }
 
+-- DAP configuration
+local dap = require('dap')
+dap.adapters.lldb = {
+    type = 'executable',
+    command = '/home/karlie/Repositories/llvm-project/build/bin/lldb-vscode', -- adjust as needed, must be absolute path
+    name = 'lldb'
+}
+
+dap.configurations.cpp = {
+    {
+        name = 'Launch',
+        type = 'lldb',
+        request = 'launch',
+        program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
+        args = {},
+
+        -- 💀
+        -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
+        --
+        --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+        --
+        -- Otherwise you might get the following error:
+        --
+        --    Error on launch: Failed to attach to the target process
+        --
+        -- But you should be aware of the implications:
+        -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
+        -- runInTerminal = false,
+    },
+}
+
+-- Extra git keymaps
+-- require('gitsigns').setup {
+--     on_attach = function(bufnr)
+--         local gs = package.loaded.gitsigns
+
+--         local function map(mode, l, r, opts)
+--           opts = opts or {}
+--           opts.buffer = bufnr
+--           vim.keymap.set(mode, l, r, opts)
+--         end
+
+--         -- Extra actions
+--         map('n', '<F9>', gs.prev_hunk)
+--         map('n', '<F10>', gs.next_hunk)
+--         map('n', '<F11>', gs.preview_hunk)
+--         map('n', '<F12>', gs.preview_hunk)
+--     end
+-- }
+
 -- Additional Plugins
 lvim.plugins = {
     { "psliwka/vim-smoothie" },
@@ -229,7 +284,10 @@ lvim.plugins = {
             vim.keymap.set('n', '<leader>Dk', function() require("duck").cook() end, {})
         end
     },
-    -- {
+    {
+        "iamcco/markdown-preview.nvim",
+        run = function() vim.fn["mkdp#util#install"]() end,
+    },
     --     "andrewferrier/debugprint.nvim",
     --     config = function()
     --         require("debugprint").setup({create_keymaps = false, create_commands = false})
@@ -313,6 +371,7 @@ lvim.autocommands = {
                     "TelescopePrompt",
                     "alpha",
                     "netrw",
+                    "log",
                 }
 
                 local map = require('mini.map')
