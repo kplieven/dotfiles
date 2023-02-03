@@ -23,6 +23,13 @@ lvim.keys.normal_mode["<C-t>"] = ":tabe<cr>"
 lvim.keys.normal_mode["<leader>o"] = ":ClangdSwitchSourceHeader<cr>"
 lvim.keys.normal_mode["L"] = ":bnext<cr>"
 lvim.keys.normal_mode["H"] = ":bprev<cr>"
+
+lvim.keys.normal_mode["<F8>"] = ":Gitsigns stage_hunk<cr>"
+lvim.keys.normal_mode["<F9>"] = ":Gitsigns next_hunk<cr>"
+lvim.keys.normal_mode["<F10>"] = ":Gitsigns prev_hunk<cr>"
+lvim.keys.normal_mode["<F11>"] = ":Gitsigns reset_hunk<cr>"
+lvim.keys.normal_mode["<F12>"] = ":Gitsigns preview_hunk<cr>"
+
 -- unmap a default keymapping
 -- vim.keymap.del("n", "<C-Up>")
 -- override a default keymapping
@@ -175,6 +182,18 @@ dap.adapters.lldb = {
     command = '/home/karlie/Repositories/llvm-project/build/bin/lldb-vscode', -- adjust as needed, must be absolute path
     name = 'lldb'
 }
+
+vim.keymap.set("n", "<F1>", function() dap.toggle_breakpoint() end)
+vim.keymap.set("n", "<F2>", function() dap.continue() end)
+vim.keymap.set("n", "<F3>", function()
+                                dap.terminate()
+                                dap.close()
+                                require'dapui'.toggle()
+                            end)
+vim.keymap.set("n", "<F4>", function() dap.step_out() end)
+vim.keymap.set("n", "<F5>", function() dap.step_into() end)
+vim.keymap.set("n", "<F6>", function() dap.step_over() end)
+vim.keymap.set("n", "<F7>", function() dap.run_to_cursor() end)
 
 dap.configurations.cpp = {
     {
