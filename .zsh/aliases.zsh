@@ -34,5 +34,4 @@ alias vzsh='vim ~/.zshrc'
 # git
 alias g='git'
 
-# Barco
-alias sshphoenix='sshpass -p letmein ssh root@10.200.18.72'
+alias wtf = "!git commit -m \"$(curl -s whatthecommit.com/index.txt)\""
