@@ -38,3 +38,6 @@ alias vzsh='vim ~/.zsh/'
 alias g='git'
 alias wtf='git commit -m "$(curl -s whatthecommit.com/index.txt)"'
 
+# Barco VPN
+alias vpnconnect='openconnect korvpn.barco.com/token --background --useragent "AnyConnect Windows 4.10.06079" -v'
+alias vpndisconnect='killall -SIGINT openconnect'
