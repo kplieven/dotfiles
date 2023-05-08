@@ -1,8 +1,11 @@
-## Git dotfiles
-alias config="git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME"
+# Git dotfiles
+alias config='git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 alias icat='kitty +kitten icat'
 alias s='kitty +kitten ssh'
+
+# trick to enable running aliases as root
+alias sudo='sudo '
 
 which exa > /dev/null 2>&1
 if [ $? -eq 0 ]; then
@@ -19,9 +22,9 @@ LVIM_INSTALLED=$?
 nvim --version > /dev/null 2>&1
 NEOVIM_INSTALLED=$?
 if [ $LVIM_INSTALLED -eq 0 ]; then
-  alias vim="lvim"
+  alias vim='lvim'
 elif [ $NEOVIM_INSTALLED -eq 0 ]; then
-  alias vim="nvim"
+  alias vim='nvim'
 fi
 
 # mimic vim functions
@@ -29,9 +32,9 @@ alias :q='exit'
 alias :e='vim'
 
 # zsh profile editing
-alias vzsh='vim ~/.zshrc'
+alias vzsh='vim ~/.zsh/'
 
 # git
 alias g='git'
+alias wtf='git commit -m "$(curl -s whatthecommit.com/index.txt)"'
 
-alias wtf = "!git commit -m \"$(curl -s whatthecommit.com/index.txt)\""
