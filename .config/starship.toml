@@ -21,7 +21,7 @@ format = "[$branch(:$remote_branch)]($style) "
 disabled = true
 
 [cmake]
-disabled = true
+# disabled = true
 
 [ruby]
 disabled = true
