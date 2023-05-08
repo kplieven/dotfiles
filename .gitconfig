@@ -31,4 +31,9 @@
 ## Git Submodule
     S = submodule
     Suir = submodule update --init --recursive
+	wtf = !git add -u && git commit -m \"$(curl --silent --fail https://whatthecommit.com/index.txt)\"
 
+[push]
+	autoSetupRemote = true
+[credential]
+	helper = store
