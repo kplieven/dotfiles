@@ -177,50 +177,126 @@ lvim.builtin.treesitter.highlight.enabled = true
 
 -- DAP configuration
 local dap = require('dap')
+-- C++
 dap.adapters.lldb = {
     type = 'executable',
     command = '/home/karlie/Repositories/llvm-project/build/bin/lldb-vscode', -- adjust as needed, must be absolute path
     name = 'lldb'
 }
-
-vim.keymap.set("n", "<F1>", function() dap.toggle_breakpoint() end)
-vim.keymap.set("n", "<F2>", function() dap.continue() end)
-vim.keymap.set("n", "<F3>", function()
-                                dap.terminate()
-                                dap.close()
-                                require'dapui'.toggle()
-                            end)
-vim.keymap.set("n", "<F4>", function() dap.step_out() end)
-vim.keymap.set("n", "<F5>", function() dap.step_into() end)
-vim.keymap.set("n", "<F6>", function() dap.step_over() end)
-vim.keymap.set("n", "<F7>", function() dap.run_to_cursor() end)
+dap.adapters.cppdbg = {
+    id = 'cppdbg',
+    type = 'executable',
+    command = '/home/karlie/vscode-cpptools-linux/extension/debugAdapters/bin/OpenDebugAD7',
+}
 
 dap.configurations.cpp = {
     {
         name = 'Launch',
         type = 'lldb',
         request = 'launch',
+        cwd = '${workspaceFolder}',
+        stopOnEntry = false,
         program = function()
             return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
         end,
+        setupCommands = {
+            {
+                description = "Enable pretty-printing for gdb",
+                text = "-enable-pretty-printing",
+                ignoreFailures = true
+            },
+        },
+    },
+    {
+        name = 'Attach to delirium',
+        type = 'cppdbg',
+        request = 'launch',
+        MIMode = 'gdb',
+        miDebuggerPath = '/home/karlie/Brewery/w3delirium/tools/w3delirium-sdk/bin/x86_64-linux-gdb',
+        miDebuggerServerAddress = '10.200.18.72:1234',
         cwd = '${workspaceFolder}',
-        stopOnEntry = false,
-        args = {},
+        stopOnEntry = true,
+        externalConsole = false,
+        program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        setupCommands = {
+            {
+                description = "Enable pretty-printing for gdb",
+                text = "-enable-pretty-printing",
+                ignoreFailures = true
+            },
+        },
+    },
+    {
+        name = 'Attach to phoenix',
+        type = 'cppdbg',
+        request = 'launch',
+        MIMode = 'gdb',
+        miDebuggerPath = '/home/karlie/Brewery/w3phoenix/tools/w3phoenix-sdk/bin/x86_64-linux-gdb',
+        miDebuggerServerAddress = '10.200.18.118:1234',
+        cwd = '${workspaceFolder}',
+        stopOnEntry = true,
+        externalConsole = false,
+        program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        setupCommands = {
+            {
+                description = "Enable pretty-printing for gdb",
+                text = "-enable-pretty-printing",
+                ignoreFailures = true
+            },
+        },
+    }
+}
+dap.configurations.c = dap.configurations.cpp
+dap.configurations.rust = dap.configurations.cpp
 
-        -- 💀
-        -- if you change `runInTerminal` to true, you might need to change the yama/ptrace_scope setting:
-        --
-        --    echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
-        --
-        -- Otherwise you might get the following error:
-        --
-        --    Error on launch: Failed to attach to the target process
-        --
-        -- But you should be aware of the implications:
-        -- https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
-        -- runInTerminal = false,
+-- Python
+dap.adapters.python = {
+    type = 'executable',
+    command = '/home/karlie/.virtualenvs/debugpy/bin/python',
+    args = { '-m', 'debugpy.adapter' },
+}
+
+dap.configurations.python = {
+    {
+        -- The first three options are required by nvim-dap
+        type = 'python', -- the type here established the link to the adapter definition: `dap.adapters.python`
+        request = 'launch',
+        name = "Launch file",
+        -- Options below are for debugpy, see https://github.com/microsoft/debugpy/wiki/Debug-configuration-settings for supported options
+
+        program = "${file}", -- This configuration will launch the current file if used.
+        pythonPath = function()
+            -- debugpy supports launching an application with a different interpreter then the one used to launch debugpy itself.
+            -- The code below looks for a `venv` or `.venv` folder in the current directly and uses the python within.
+            -- You could adapt this - to for example use the `VIRTUAL_ENV` environment variable.
+            local cwd = vim.fn.getcwd()
+            if vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
+                return cwd .. '/venv/bin/python'
+            elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
+                return cwd .. '/.venv/bin/python'
+            else
+                return '/usr/bin/python3'
+            end
+        end,
     },
 }
+
+vim.keymap.set("n", "<F1>", function() dap.toggle_breakpoint() end)
+vim.keymap.set("n", "<F2>", function() dap.continue() end)
+vim.keymap.set("n", "<F3>", function()
+    dap.terminate()
+    dap.close()
+    require 'dapui'.toggle()
+end)
+vim.keymap.set("n", "<F4>", function() dap.step_out() end)
+vim.keymap.set("n", "<F5>", function() dap.step_into() end)
+vim.keymap.set("n", "<F6>", function() dap.step_over() end)
+vim.keymap.set("n", "<F7>", function() dap.run_to_cursor() end)
+
 
 -- Extra git keymaps
 -- require('gitsigns').setup {
