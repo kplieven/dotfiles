@@ -7,8 +7,8 @@ SAVEHIST=10000
 setopt autocd
 
 bindkey -v
-bindkey ^R history-incremental-search-backward 
-bindkey ^S history-incremental-search-forward
+bindkey "^R" history-incremental-search-backward
+bindkey "^S" history-incremental-search-forward
 
 if [ -z ${SSH_CONNECTION+x} ]; then
     eval "$(starship init zsh)"
