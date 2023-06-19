@@ -24,3 +24,7 @@ fi
 # checkout dotfiles from repo
 config checkout
 config config status.showUntrackedFiles no
+
+for FILE in $HOME/scripts/bin/*; do
+    ln -s $FILE $HOME/.local/bin/
+done
