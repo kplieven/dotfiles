@@ -1,0 +1,128 @@
+#!/bin/bash
+
+set -e
+
+print_help()
+{
+    echo "Utility script to build projects"
+    echo
+    print_usage
+}
+
+print_usage()
+{
+    echo "Usage: mk [options]"
+    echo
+    echo "Options:"
+    echo "  -d                                  Enable debug build"
+    echo "  -h                                  Print this message and exit"
+    echo "  -p <phoenix|duff|delirium|local>    Choose which platform to build for"
+}
+
+BREWERY_DIR="/home/karlie/Brewery"
+
+W3PHOENIX_DIR="$BREWERY_DIR/w3phoenix"
+W3DUFF_DIR="$BREWERY_DIR/w3duff"
+W3DELIRIUM_DIR="$BREWERY_DIR/w3delirium"
+
+DEBUG=false
+
+PLATFORM="local"
+
+while getopts hp:d OPT; do
+    case "$OPT" in
+        h)
+            print_help
+            exit 0
+            ;;
+        p)
+            PLATFORM=$OPTARG
+            ;;
+        d)
+            DEBUG=true
+            ;;
+        *)
+            print_usage >&2
+            exit 1
+            ;;
+    esac
+done
+
+shift $(($OPTIND-1))
+
+## Determine conan and cmake flags
+
+# Intial/common arguments
+conan_args=(
+    --update
+    --build=missing
+    # -o qt-conan-umbrella:qtVersion=6.System
+)
+cmake_args=(
+    -DCMAKE_MODULE_PATH="$(pwd)"
+)
+
+# Determine conan profile and set platform dependant arguments
+if [[ $PLATFORM == "local" ]]; then
+    if [[ $DEBUG = true ]]; then
+        CONAN_PROFILE="debug" # $HOME/.conan/profiles/debug
+    else
+        CONAN_PROFILE="default" # $HOME/.conan/profiles/default
+    fi
+else
+    case "$PLATFORM" in
+        "phoenix")
+            BREWERY_PLATFORM_DIR="$W3PHOENIX_DIR"
+            BREWERY_SDK_DIR="$W3PHOENIX_DIR/tools/w3phoenix-sdk"
+            ;;
+        "duff")
+            BREWERY_PLATFORM_DIR="$W3DUFF_DIR"
+            BREWERY_SDK_DIR="$W3DUFF_DIR/tools/w3duff-sdk"
+            ;;
+        "delirium")
+            BREWERY_PLATFORM_DIR="$W3DELIRIUM_DIR"
+            BREWERY_SDK_DIR="$W3DELIRIUM_DIR/tools/w3delirium-sdk"
+            ;;
+        *)
+            print_usage
+            exit 1
+    esac
+
+    if [[ $DEBUG = true ]]; then
+        CONAN_PROFILE="$BREWERY_SDK_DIR/conan-profile-debug"
+    else
+        CONAN_PROFILE="$BREWERY_SDK_DIR/conan-profile-release"
+    fi
+
+    cmake_args+=(
+        -DCMAKE_TOOLCHAIN_FILE="$BREWERY_SDK_DIR/share/buildroot/toolchainfile.cmake"
+    )
+fi
+
+conan_args+=(
+    -pr=$CONAN_PROFILE
+)
+
+# Add cmake debug/release flags
+if [[ $DEBUG = true ]]; then
+    cmake_args+=(
+        -DCMAKE_BUILD_TYPE=Debug
+        -DCMAKE_C_FLAGS_DEBUG="-g -O0"
+        -DCMAKE_CXX_FLAGS_DEBUG="-g -O0"
+        -DENABLE_CODE_COVERAGE=ON
+    )
+else
+    cmake_args+=(
+        -DCMAKE_BUILD_TYPE=Release
+    )
+fi
+
+echo "Executing conan command:"
+echo "conan install ..`printf " %s" "${conan_args[@]}"`"
+
+conan install .. "${conan_args[@]}"
+
+echo "Executing cmake command:"
+echo "cmake ..`printf " %s" "${cmake_args[@]}"`"
+
+cmake .. "${cmake_args[@]}"
