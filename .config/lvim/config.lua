@@ -11,7 +11,7 @@ an executable
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save = false
-lvim.colorscheme = "darcula"
+lvim.colorscheme = "tokyonight"
 -- to disable icons and use a minimalist setup, uncomment the following
 -- lvim.use_icons = false
 
@@ -393,6 +393,9 @@ lvim.plugins = {
     },
     {
         "doums/darcula"
+    },
+    {
+        "folke/tokyonight.nvim"
     }
     --     "andrewferrier/debugprint.nvim",
     --     config = function()
