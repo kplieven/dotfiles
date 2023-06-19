@@ -230,10 +230,10 @@ gaps outer -3
 # border_radius 5
 
 # Background
-exec --no-startup-id feh --bg-scale --zoom fill -qrzZFD 10.0 /home/karlie/Pictures/Wallpapers
+exec --no-startup-id feh --bg-fill -qrzZD 10.0 /home/karlie/Pictures/Wallpapers
 
 # Lockscreen
-bindsym Mod4+l exec "i3lock-fancy-rapid 10 3"
+bindsym Mod4+l exec "betterlockscreen -l"
 
 # Lockscreen timer
 exec "xautolock -detectsleep -time 3 -locker \"i3exit suspend\""
