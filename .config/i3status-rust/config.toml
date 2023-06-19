@@ -28,6 +28,8 @@ format = "   {$combo.str(max_w:100)  $prev $play $next} "
 [[block.click]]
 button = "left"
 action = "play_pause"
+# [[block.theme_overrides]]
+# info_fg = "#1db954"
 
 [[block]]
 block = "cpu"
@@ -48,10 +50,18 @@ format = " $icon $mem_total_used_percents.eng(w:2) "
 format_alt = " $icon_swap $swap_used_percents.eng(w:2) "
 
 [[block]]
+block = "net"
+format = " $icon {$signal_strength $ssid $frequency| Wired connection} "
+
+[[block]]
 block = "sound"
 [[block.click]]
 button = "left"
 cmd = "pavucontrol"
+
+[[block]]
+block = "battery"
+format = " $icon $percentage "
 
 [[block]]
 block = "time"
