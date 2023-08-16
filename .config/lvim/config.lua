@@ -7,7 +7,6 @@ a global executable or a path to
 an executable
 ]]
 -- THESE ARE EXAMPLE CONFIGS FEEL FREE TO CHANGE TO WHATEVER YOU WANT
-
 -- general
 lvim.log.level = "warn"
 lvim.format_on_save = false
@@ -21,15 +20,43 @@ lvim.leader = "space"
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 lvim.keys.normal_mode["<C-t>"] = ":tabe<cr>"
 lvim.keys.normal_mode["<leader>o"] = ":ClangdSwitchSourceHeader<cr>"
-lvim.keys.normal_mode["L"] = ":bnext<cr>"
-lvim.keys.normal_mode["H"] = ":bprev<cr>"
 lvim.keys.normal_mode["<Leader>bo"] = ':%bd!|e #|bd #|normal`"<CR>'
+vim.keymap.set("i", "<S-Esc>", "<BS>", { noremap = true })
 
 lvim.keys.normal_mode["<F8>"] = ":Gitsigns stage_hunk<cr>"
 lvim.keys.normal_mode["<F9>"] = ":Gitsigns next_hunk<cr>"
 lvim.keys.normal_mode["<F10>"] = ":Gitsigns prev_hunk<cr>"
 lvim.keys.normal_mode["<F11>"] = ":Gitsigns reset_hunk<cr>"
 lvim.keys.normal_mode["<F12>"] = ":Gitsigns preview_hunk<cr>"
+
+lvim.keys.normal_mode["n"] = "j"
+lvim.keys.normal_mode["e"] = "k"
+lvim.keys.normal_mode["i"] = "l"
+lvim.keys.normal_mode["u"] = "i"
+lvim.keys.normal_mode["l"] = "u"
+lvim.keys.normal_mode["k"] = "n"
+lvim.keys.normal_mode["m"] = "N"
+
+vim.keymap.set("v", "n", "j");
+vim.keymap.set("v", "e", "k");
+vim.keymap.set("v", "i", "l");
+vim.keymap.set("v", "u", "i");
+vim.keymap.set("v", "U", "I");
+
+lvim.keys.normal_mode["N"] = "J"
+lvim.keys.normal_mode["E"] = "K"
+lvim.keys.normal_mode["H"] = ":bprev<cr>"
+lvim.keys.normal_mode["I"] = ":bnext<cr>"
+lvim.keys.normal_mode["U"] = "I"
+lvim.keys.normal_mode["L"] = "U"
+
+lvim.keys.normal_mode["<C-n>"] = "<C-W>j"
+lvim.keys.normal_mode["<C-e>"] = "<C-W>k"
+lvim.keys.normal_mode["<C-i>"] = "<C-W>l"
+lvim.keys.normal_mode["<C-a>"] = "<C-i>"
+-- lvim.keys.normal_mode["<C-u>"] = "<C-i>"
+-- lvim.keys.normal_mode["<C-l>"] = "<C-u>"
+-- lvim.keys.normal_mode["<C-k>"] = "<C-n>"
 
 -- unmap a default keymapping
 -- vim.keymap.del("n", "<C-Up>")
@@ -76,9 +103,58 @@ vim.opt.sw = 4
 -- After changing plugin config exit and reopen LunarVim, Run :PackerInstall :PackerCompile
 lvim.builtin.alpha.active = true
 lvim.builtin.alpha.mode = "dashboard"
+
+lvim.builtin.alpha.dashboard.section.header.val = {
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡐⠰⠠⠄⡀⢄⠒⣠⠄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣧⠹⢓⢡⣊⡔⣈⠛⡬⣃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣃⠳⡎⠣⢜⠌⠣⡞⠴⣉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠄⢂⣁⡿⢘⢓⠡⢺⣈⠑⣞⠰⢨⠘⠰⢠⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠄⢂⣡⠴⢚⠩⠄⣟⢦⣌⠣⢱⢂⡑⢮⠐⣩⢄⡁⠂⠌⠒⠡⢂⠄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢄⣂⠡⡴⡬⢯⡰⢌⠢⡑⠌⡇⡘⡎⠰⢹⢠⠘⡼⢈⢼⠠⡘⡑⠪⢄⡁⠂⠌⡐⠡⢂⠄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⡔⠱⣥⢂⠍⡓⠮⣍⠳⣜⡌⡳⣌⢧⠱⠛⠲⣡⡝⠦⠞⡰⢡⡘⣥⠮⣙⡳⠦⢀⡁⢂⣬⢲⡱⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡈⡔⠜⠡⣎⢭⡓⢮⣱⠌⠫⣔⠮⣑⠮⢆⡥⣉⠒⠤⡘⢄⣣⠖⠧⣙⢴⠪⠑⡁⡢⠔⠌⢫⢖⣣⠳⣥⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡐⠰⡘⠨⡐⣭⢲⡙⡦⢽⠀⠄⡀⢺⠔⡙⠦⣍⡚⠵⣦⠏⣚⠥⡚⠍⠊⢄⢢⠱⠘⡈⠄⠡⠚⡜⢦⡛⡴⡂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠠⣐⡞⢠⢓⡤⠁⣆⢧⢣⡝⡼⣹⠀⠒⠠⢸⡓⢮⣑⠢⢉⠳⢞⠚⠡⢁⡂⢜⠊⡂⢁⠢⠑⡉⠄⡁⢂⢹⢣⡝⣲⢱⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡰⠢⢏⡵⢀⡣⢝⡼⡩⡔⢯⡲⣝⡲⣹⢀⠡⢂⢡⡛⢦⡍⣏⠳⡍⠤⣸⠴⡍⠈⠄⢂⠃⢡⠈⠔⡀⠒⡈⠄⡈⢷⡸⣅⢏⠞⣠⠵⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⡠⣐⠌⡀⢂⡐⠠⠬⢇⡊⠐⠇⣈⠑⠣⡳⢭⠗⢂⠰⢀⠢⡝⢦⡹⣌⢯⠃⣴⢣⢻⠴⠁⠌⡠⠌⠠⢈⡐⠠⢁⠰⠐⡀⢣⠗⡸⠍⠊⠄⠀⠑⣂⠄⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⡱⠌⡒⣄⡡⢀⠁⡂⠄⡉⠱⢢⣈⠵⣀⢱⡤⣌⡤⢆⡄⠢⣝⢮⡱⢎⠇⣰⢎⢧⠻⣜⢃⠐⢠⠈⠄⠡⢀⡁⠂⠤⢁⠐⡠⢉⠐⠈⠀⢀⠤⣂⠥⡚⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠈⠐⠌⡐⠕⠲⣌⡐⢀⠂⣁⠂⣍⠼⠨⢊⡐⠍⡞⣱⡚⢗⡺⣌⡳⠏⢰⢣⠞⣬⢻⡌⣏⡐⠠⢈⡐⢁⠂⠄⣁⠢⠐⡈⠐⠀⢀⡤⣺⡙⠤⠡⠂⠁⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⡒⢅⡂⢽⠲⣤⡀⠜⢣⡀⡁⢂⢉⠖⢌⡀⠛⢆⡈⠑⡏⢠⠟⣬⢛⡴⢫⡜⡼⢤⠁⢂⠐⠠⡈⢐⠀⠂⠁⢀⠤⣺⢇⡳⢥⡃⠆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢡⠨⡝⣎⢳⣱⠘⡲⢄⡉⠲⠤⠃⡈⠄⠋⠦⢄⣨⠝⢠⡛⡼⢢⢏⡜⣳⠼⠑⢧⠊⠄⡈⠡⠐⠀⣀⠤⠊⡏⠀⡇⢯⡜⣣⠗⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡌⠷⣜⡣⢞⢸⠖⢔⡉⠖⡤⡁⡐⢈⠰⠐⡈⠄⠌⢶⢹⡜⣣⡎⠓⣍⠖⠋⠄⠌⠐⠀⢁⡤⡎⡅⠐⡀⢇⡡⣏⢶⣩⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⡴⣩⢛⡦⡰⢂⠌⠡⠀⡟⡴⢌⡠⢁⠐⡈⡐⠠⠑⢪⠥⠔⢋⠠⢈⠐⠈⣀⠔⣮⢋⡖⣇⡁⠒⣸⠁⡼⠎⠂⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠧⢋⠶⣙⠧⣌⡠⢁⠝⢄⠒⠅⡳⢠⡐⠠⠁⠌⢢⠀⡇⠀⠂⣀⠴⣚⠄⠂⣧⠛⡈⠡⢙⢢⠅⡘⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠊⢷⣡⢛⡼⢆⡊⢱⠆⣌⠒⢉⡳⠌⡐⡃⠤⡁⠔⢮⢣⡛⣜⢂⣡⠄⢂⡔⠣⡩⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⡜⣭⢹⢨⣇⠀⡉⠢⢄⠑⡤⢉⡌⠔⢊⡰⣣⠝⡼⠁⡦⠘⡣⠩⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠫⡳⣌⠻⡤⣅⣈⠳⢦⢤⢴⡘⣭⢖⡵⢫⠇⡠⠕⢉⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠳⡱⢎⡼⣘⢧⡚⣬⢱⡙⡮⠜⠓⠈    ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠑⠮⡕⢮⡱⠆⠒⠉⠀⠀⠀⠀   ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+    [[⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠁⠋⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀]],
+}
+lvim.builtin.alpha.dashboard.section.footer.val = "Happy clacking!"
+
+lvim.builtin.alpha.dashboard.section.buttons.entries[2] = { "N", lvim.icons.ui.NewFile .. "  New File", "<CMD>ene!<CR>" }
+
 lvim.builtin.terminal.active = true
 lvim.builtin.nvimtree.setup.view.side = "left"
 lvim.builtin.nvimtree.setup.renderer.icons.show.git = false
+
+local function my_on_attach(bufnr)
+    local api = require "nvim-tree.api"
+
+    local function opts(desc)
+        return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+    end
+
+    -- default mappings
+    api.config.mappings.default_on_attach(bufnr)
+
+    -- custom mappings
+    vim.keymap.set("n", "e", "k", opts("Just go up"))
+    vim.keymap.set('n', '?', api.tree.toggle_help, opts('Help'))
+end
+lvim.builtin.nvimtree.setup.on_attach = my_on_attach
+
 lvim.builtin.dap.active = true;
 
 -- if you don't want all the parsers change this to a table of the ones you want
@@ -160,18 +236,18 @@ formatters.setup {
 -- local linters = require "lvim.lsp.null-ls.linters"
 -- linters.setup {
 --     { command = "flake8", filetypes = { "python" } },
-    -- {
-    --   -- each linter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
-    --   command = "shellcheck",
-    --   ---@usage arguments to pass to the formatter
-    --   -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
-    --   extra_args = { "--severity", "warning" },
-    -- },
-    -- {
-    --   command = "codespell",
-    --   ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
-    --   filetypes = { "javascript", "python" },
-    -- },
+-- {
+--   -- each linter accepts a list of options identical to https://github.com/jose-elias-alvarez/null-ls.nvim/blob/main/doc/BUILTINS.md#Configuration
+--   command = "shellcheck",
+--   ---@usage arguments to pass to the formatter
+--   -- these cannot contain whitespaces, options such as `--line-width 80` become either `{'--line-width', '80'}` or `{'--line-width=80'}`
+--   extra_args = { "--severity", "warning" },
+-- },
+-- {
+--   command = "codespell",
+--   ---@usage specify which filetypes to enable. By default a providers will attach to all the filetypes it supports.
+--   filetypes = { "javascript", "python" },
+-- },
 -- }
 
 -- DAP configuration
@@ -284,18 +360,22 @@ dap.configurations.python = {
     },
 }
 
-vim.keymap.set("n", "<F1>", function() dap.toggle_breakpoint() end)
-vim.keymap.set("n", "<F2>", function() dap.continue() end)
-vim.keymap.set("n", "<F3>", function()
-    dap.terminate()
-    dap.close()
-    require 'dapui'.toggle()
-end)
-vim.keymap.set("n", "<F4>", function() dap.step_out() end)
-vim.keymap.set("n", "<F5>", function() dap.step_into() end)
-vim.keymap.set("n", "<F6>", function() dap.step_over() end)
-vim.keymap.set("n", "<F7>", function() dap.run_to_cursor() end)
+-- lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
+-- lvim.keys.normal_mode["<C-t>"] = ":tabe<cr>"
+-- lvim.keys.normal_mode["<leader>o"] = ":ClangdSwitchSourceHeader<cr>"
+-- lvim.keys.normal_mode["L"] = ":bnext<cr>"
 
+lvim.keys.normal_mode["<F1>"] = "<Cmd>lua require'dap'.toggle_breakpoint()<CR>"
+lvim.keys.normal_mode["<F2>"] = "<Cmd>lua require'dap'.continue()<CR>"
+lvim.keys.normal_mode["<F3>"] = function()
+    require 'dap'.terminate()
+    require 'dap'.close()
+    require 'dapui'.toggle()
+end
+lvim.keys.normal_mode["<F4>"] = "<Cmd>lua require'dap'.step_out()<CR>"
+lvim.keys.normal_mode["<F5>"] = "<Cmd>lua require'dap'.step_into()<CR>"
+lvim.keys.normal_mode["<F6>"] = "<Cmd>lua require'dap'.step_over()<CR>"
+lvim.keys.normal_mode["<F7>"] = "<Cmd>lua require'dap'.run_to_cursor()<CR>"
 
 -- Extra git keymaps
 -- require('gitsigns').setup {
@@ -358,9 +438,10 @@ lvim.plugins = {
                     encode = map.gen_encode_symbols.dot('4x2'),
                 },
                 window = {
+                    focusable = true,
                     side = 'right',
-                    width = 20, -- set to 1 for a pure scrollbar :)
-                    winblend = 15,
+                    width = 8, -- set to 1 for a pure scrollbar :)
+                    winblend = 30,
                     show_integration_count = false,
                 },
             })
@@ -373,9 +454,9 @@ lvim.plugins = {
     {
         'tamton-aquib/duck.nvim',
         config = function()
-            vim.keymap.set('n', '<leader>Dd', function() require("duck").hatch() end, {})
-            vim.keymap.set('n', '<leader>Dm', function() require("duck").hatch("🐕", 0.5) end, {})
-            vim.keymap.set('n', '<leader>Dk', function() require("duck").cook() end, {})
+            lvim.keys.normal_mode["<Leader>Dd"] = function() require("duck").hatch() end
+            lvim.keys.normal_mode["<Leader>Dm"] = function() require("duck").hatch("🐕", 0.5) end
+            lvim.keys.normal_mode["<Leader>Dk"] = function() require("duck").cook() end
         end
     },
     {
@@ -396,6 +477,63 @@ lvim.plugins = {
     },
     {
         "folke/tokyonight.nvim"
+    },
+    {
+        "folke/todo-comments.nvim",
+        dependencies = { "nvim-lua/plenary.nvim" },
+        opts = {
+            -- your configuration comes here
+            -- or leave it empty to use the default settings
+            -- refer to the configuration section below
+        }
+    },
+    {
+        "folke/flash.nvim",
+        event = "VeryLazy",
+        ---@type Flash.Config
+        opts = {},
+        keys = {
+            {
+                "s",
+                mode = { "n", "x", "o" },
+                function()
+                    require("flash").jump()
+                end,
+                desc = "Flash",
+            },
+            {
+                "S",
+                mode = { "n", "o", "x" },
+                function()
+                    require("flash").treesitter()
+                end,
+                desc = "Flash Treesitter",
+            },
+            {
+                "r",
+                mode = "o",
+                function()
+                    require("flash").remote()
+                end,
+                desc = "Remote Flash",
+            },
+            {
+                "R",
+                mode = { "o", "x" },
+                function()
+                    require("flash").treesitter_search()
+                end,
+                desc = "Flash Treesitter Search",
+            },
+            {
+                "<c-s>",
+                mode = { "c" },
+                function()
+                    require("flash").toggle()
+                end,
+                desc = "Toggle Flash Search",
+            },
+        },
     }
     --     "andrewferrier/debugprint.nvim",
     --     config = function()

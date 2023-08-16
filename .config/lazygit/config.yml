@@ -1,0 +1,25 @@
+keybinding:
+  universal:
+    prevItem: 'e'
+    nextItem: 'n'
+    prevBlock: '<c-h>'
+    nextBlock: '<c-i>'
+    nextMatch: '='
+    prevMatch: '-'
+    new: 'k'
+    edit: 'o'
+    openFile: 'O'
+    scrollUpMain: 'E'
+    scrollDownMain: 'N'
+    undo: 'l'
+    redo: '<c-r>'
+    diffingMenu: 'M'
+    filteringMenu: '<c-f>'
+  files:
+    ignoreFile: 'I'
+  commits:
+    moveDownCommit: '<c-n>'
+    moveUpCommit: '<c-e>'
+  branches:
+    viewGitFlowOptions: 'I'
+    setUpstream: 'U'
