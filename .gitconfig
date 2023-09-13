@@ -35,5 +35,6 @@
 
 [push]
 	autoSetupRemote = true
+	default = current
 [credential]
 	helper = store
