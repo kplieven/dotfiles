@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-git clone --bare git@github.com:kplieven/dotfiles.git $HOME/.dotfiles
+git clone --bare https://github.com/kplieven/dotfiles.git $HOME/.dotfiles
 
 # define config alias locally since the dotfiles
-# aren't isntalled on the system yet
+# aren't installed on the system yet
 function config {
   git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@
 }
@@ -12,7 +12,7 @@ function config {
 mkdir -p .dotfiles-backup
 config checkout
 if [ $? = 0 ]; then
-  echo "Checked out fotiles from git@github.com:kplieven/dotfiles.git"
+  echo "Checked out dotfiles from https://github.com/kplieven/dotfiles.git"
 else
   echo "Moving existing dotfiles to ~/.dotfiles-backup"
   config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | while read line; do
