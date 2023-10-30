@@ -15,4 +15,10 @@ export CDPATH=.:$HOME/Repositories/Barco
 
 source $HOME/.cargo/env
 
+if [ -z "$RUNNING_IN_DOCKER" ]; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+fi
+
 # source "/etc/profile.d/rvm.sh"
