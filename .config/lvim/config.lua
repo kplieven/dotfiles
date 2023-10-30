@@ -9,6 +9,12 @@ lvim.keys.normal_mode["<C-t>"] = ":tabe<cr>"
 lvim.keys.normal_mode["<leader>o"] = ":ClangdSwitchSourceHeader<cr>"
 lvim.keys.normal_mode["L"] = ":bnext<cr>"
 lvim.keys.normal_mode["H"] = ":bprev<cr>"
+lvim.keys.normal_mode["<S-Left>"] = ":bprev<cr>"
+lvim.keys.normal_mode["<S-Right>"] = ":bnext<cr>"
+lvim.keys.normal_mode["<C-Left>"] = "<C-W>h"
+lvim.keys.normal_mode["<C-Down>"] = "<C-W>j"
+lvim.keys.normal_mode["<C-Up>"] = "<C-W>k"
+lvim.keys.normal_mode["<C-Right>"] = "<C-W>l"
 lvim.keys.normal_mode["<Leader>bo"] = ':%bd!|e #|bd #|normal`"<CR>'
 
 lvim.keys.normal_mode["<F8>"] = ":Gitsigns stage_hunk<cr>"
