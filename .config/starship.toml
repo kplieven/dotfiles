@@ -18,10 +18,13 @@ style = "bold purple"
 format = "[$branch(:$remote_branch)]($style) "
 
 [python]
-disabled = true
+# disabled = true
 
 [cmake]
 # disabled = true
 
 [ruby]
+disabled = true
+
+[docker_context]
 disabled = true
