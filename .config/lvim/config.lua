@@ -128,7 +128,7 @@ dap.configurations.cpp = {
         request = 'launch',
         MIMode = 'gdb',
         miDebuggerPath = '/home/karlie/Brewery/w3delirium/tools/w3delirium-sdk/bin/x86_64-linux-gdb',
-        miDebuggerServerAddress = '10.200.18.72:1234',
+        miDebuggerServerAddress = '10.200.18.100:1234',
         cwd = '${workspaceFolder}',
         stopOnEntry = true,
         externalConsole = false,
@@ -150,6 +150,27 @@ dap.configurations.cpp = {
         MIMode = 'gdb',
         miDebuggerPath = '/home/karlie/Brewery/w3phoenix/tools/w3phoenix-sdk/bin/x86_64-linux-gdb',
         miDebuggerServerAddress = '10.200.18.118:1234',
+        cwd = '${workspaceFolder}',
+        stopOnEntry = true,
+        externalConsole = false,
+        program = function()
+            return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        setupCommands = {
+            {
+                description = "Enable pretty-printing for gdb",
+                text = "-enable-pretty-printing",
+                ignoreFailures = true
+            },
+        },
+    },
+    {
+        name = 'Attach to kirin',
+        type = 'cppdbg',
+        request = 'launch',
+        MIMode = 'gdb',
+        miDebuggerPath = '/home/karlie/Brewery/w3kirin/tools/w3kirin-sdk/bin/aarch64-linux-gdb',
+        miDebuggerServerAddress = '10.200.18.113:1234',
         cwd = '${workspaceFolder}',
         stopOnEntry = true,
         externalConsole = false,
