@@ -16,6 +16,7 @@ lvim.keys.normal_mode["<C-Down>"] = "<C-W>j"
 lvim.keys.normal_mode["<C-Up>"] = "<C-W>k"
 lvim.keys.normal_mode["<C-Right>"] = "<C-W>l"
 lvim.keys.normal_mode["<Leader>bo"] = ':%bd!|e #|bd #|normal`"<CR>'
+lvim.keys.normal_mode["ca"] = "<cmd>lua vim.lsp.buf.code_action()<CR>"
 
 lvim.keys.normal_mode["<F8>"] = ":Gitsigns stage_hunk<cr>"
 lvim.keys.normal_mode["<F9>"] = ":Gitsigns next_hunk<cr>"

@@ -10,6 +10,4 @@ bindkey -v
 bindkey "^R" history-incremental-search-backward
 bindkey "^S" history-incremental-search-forward
 
-if [ -z ${SSH_CONNECTION+x} ]; then
-    eval "$(starship init zsh)"
-fi
+source <($(which starship) init zsh --print-full-init)

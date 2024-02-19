@@ -17,15 +17,7 @@ fi
 alias ls='ls --color=auto'
 
 # vim using
-lvim --version > /dev/null 2>&1
-LVIM_INSTALLED=$?
-nvim --version > /dev/null 2>&1
-NEOVIM_INSTALLED=$?
-if [ $LVIM_INSTALLED -eq 0 ]; then
-  alias vim='lvim'
-elif [ $NEOVIM_INSTALLED -eq 0 ]; then
-  alias vim='nvim'
-fi
+alias vim='lvim'
 
 # mimic vim functions
 alias :q='exit'
@@ -55,3 +47,5 @@ alias dockerrun='sudo docker run --user karlie --net host\
     -v /home/karlie/.config/starship.toml:/home/karlie/.config/starship.toml \
     --workdir /home/karlie/$(basename $(pwd)) \
     -it '
+
+alias brewery-dev='ruby -I ~/projects/cs-brewery/lib ~/projects/cs-brewery/exe/cs-brewery'
