@@ -1,7 +1,7 @@
 config_files=(
-    "aliases.zsh"
     "completion.zsh"
     "env.zsh"
+    "aliases.zsh"
     # "antigen.zsh"
     # "plugins.zsh"
     "prompt.zsh"
