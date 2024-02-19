@@ -431,3 +431,14 @@ lvim.autocommands = {
         },
     },
 }
+
+vim.api.nvim_create_user_command("CopyLocation", function()
+    local path = vim.fn.expand("%:p")
+    local line_number = vim.fn.line('.')
+    local content = string.format('%s:%d', path, line_number)
+
+    vim.fn.setreg("+", content)
+    vim.notify('Copied "' .. content .. '" to the clipboard!')
+end, {})
+
+lvim.keys.normal_mode["yl"] = ":CopyLocation<CR>"
