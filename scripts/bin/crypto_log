@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Define an array of symbol-price pairs
+symbol_prices=(
+  "DOGEUSDT 0.143616965"
+  "SYNUSDT 1.1868"
+)
+
+# DOGE
+# 4766 aan 0.12775
+# 6029 (2570 + 3459) aan 0.15616
+
+result=""
+
+# Iterate over each pair
+for pair in "${symbol_prices[@]}"; do
+  IFS=' ' read -r symbol bought_price <<< "$pair"
+  
+  # Execute the curl command and format the output
+  output=$(curl -s "https://www.binance.com/api/v3/ticker/price?symbol=$symbol" | jq -r '"\(.symbol): \(.price | tonumber | @sh) (\((((.price | tonumber) / ('"$bought_price"' | tonumber) - 1) * 10000 | round / 100) | if . >= 0 then "+\(.)" else "\(.)" end)%)"')
+
+  result+="$output - "
+done
+
+result=${result%" - "}
+
+echo "$result"
