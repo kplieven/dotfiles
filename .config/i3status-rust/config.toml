@@ -22,6 +22,11 @@ idle_bg = "#20242c"
 icons = "material-nf"
 
 [[block]]
+block = "custom"
+command = "crypto_log"
+interval = 10
+
+[[block]]
 block = "music"
 player = "spotify"
 format = "   {$combo.str(max_w:100)  $prev $play $next} "
