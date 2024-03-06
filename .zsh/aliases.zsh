@@ -17,7 +17,14 @@ fi
 alias ls='ls --color=auto'
 
 # vim using
-alias vim='lvim'
+nvim --version > /dev/null 2>&1
+NEOVIM_INSTALLED=$?
+if [ $NEOVIM_INSTALLED -eq 0 ]; then
+  alias vim='nvim'
+  export EDITOR='nvim'
+else
+  export EDITOR='vim'
+fi
 
 # mimic vim functions
 alias :q='exit'
