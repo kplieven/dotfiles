@@ -10,7 +10,7 @@ symbol_prices=(
 # 4766 aan 0.12775
 # 6029 (2570 + 3459) aan 0.15616
 
-result=""
+result=$(curl -s "https://www.binance.com/api/v3/ticker/price?symbol=BTCUSDT" | jq -r '"\(.symbol): \(.price | tonumber | @sh) - "')
 
 # Iterate over each pair
 for pair in "${symbol_prices[@]}"; do
