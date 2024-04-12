@@ -75,3 +75,6 @@ require 'cmp-setup'
 -- [[ Custom plugin configuration]]
 -- (bufferline)
 require 'custom.bufferline-setup'
+
+-- (codesnap)
+require 'custom.codesnap-setup'
