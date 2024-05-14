@@ -218,28 +218,7 @@ bindsym $mod+d exec "rofi -modi run,drun -show drun"
 # bar {
 #     status_command i3status
 # }
-bar {
-    status_command ~/.cargo/bin/i3status-rs ~/.config/i3status-rust/config.toml
-    i3bar_command i3bar --transparency
-    position top
-    tray_output none
-    font pango:JetBrains Mono Nerd Font 10
-    separator_symbol "  "
-    workspace_min_width 40
-    # tray_padding 0
-	colors {
-		background #20242c
-		# background #00000000
-		# statusline #4c7899
-		separator #4c7899
-
-		focused_workspace  #20242c #81a1c1 #ffffff
-        active_workspace   #20242c #20242c #ffffff
-        inactive_workspace #20242c #20242c #888888
-        urgent_workspace   #20242c #20242c #bf616a
-        binding_mode       #20242c #20242c #bf616a
-	}
-}
+exec_always --no-startup-id ~/.config/polybar/launch_polybar.sh &
 
 # Gaps
 gaps inner 5
