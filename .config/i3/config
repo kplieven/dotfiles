@@ -122,6 +122,13 @@ bindsym $mod+a focus parent
 # focus the child container
 #bindsym $mod+d focus child
 
+# Disable title bars except in a stacked or tabbed layout
+default_border pixel 3
+# class                 border  backgr. text    indicator child_border                                                                     
+client.focused_inactive #0d1010 #212121 #d9d9d9 #0d1010 #063340
+client.unfocused        #0d1010 #212121 #d9d9d9 #424242 #063340
+client.focused          #2980b9 #2980b9 #fefefe #d9d9d9 #2980b9
+
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
 set $ws1 "1"
@@ -193,6 +200,9 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
+# Start picom compositor
+exec --no-startup-id picom -b
+
 # Start rofi
 bindsym $mod+d exec "rofi -modi run,drun -show drun"
 
@@ -225,12 +235,9 @@ bar {
 }
 
 # Gaps
-gaps inner 3
-gaps outer -3
-# border_radius 5
-
-# Background
-exec --no-startup-id feh --bg-fill -qrzZD 10.0 /home/karlie/Pictures/Wallpapers
+gaps inner 5
+gaps outer 0
+smart_gaps on
 
 # Lockscreen
 bindsym Mod4+l exec "betterlockscreen -l"
@@ -256,3 +263,7 @@ bindsym $mod+F12 mode "$mode_system"
 
 # Screenshot tool
 bindsym $mod+shift+s exec "flameshot gui"
+
+# Background
+exec --no-startup-id feh --bg-fill -qrzZD 10.0 /home/karlie/Pictures/Wallpapers
+
