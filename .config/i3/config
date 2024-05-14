@@ -142,6 +142,13 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
+# Set default workspaces for certain applications
+for_window [class="obsidian"] move to workspace $ws8
+for_window [class="Spotify"] move to workspace $ws9
+for_window [class="discord"] move to workspace $ws9
+for_window [class="TelegramDesktop"] move to workspace $ws9
+for_window [class="Com.cisco.secureclient.gui"] move to workspace $ws10
+
 # switch to workspace
 bindsym $mod+1 workspace number $ws1
 bindsym $mod+2 workspace number $ws2
