@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Default scaling factor
+SCALING_FACTOR=1
+
+# Function to display usage information
+usage() {
+    echo "Usage: $0 [--scaling <1|2>]"
+    exit 1
+}
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --scaling|-s)
+            shift
+            if [[ "$1" == "1" || "$1" == "2" ]]; then
+                SCALING_FACTOR=$1
+            else
+                echo "Invalid scaling factor. Must be 1 or 2."
+                usage
+            fi
+            ;;
+        *)
+            usage
+            ;;
+    esac
+    shift
+done
+
+# Adjust values based on scaling factor
+case "$SCALING_FACTOR" in
+    1)
+        DPI=96
+        HEIGHT=32
+        LINE_SIZE=2
+        FONT_SIZE=11
+        BORDER_SIZE=5
+        ;;
+    2)
+        DPI=192
+        HEIGHT=48
+        LINE_SIZE=4
+        FONT_SIZE=18
+        BORDER_SIZE=3
+        ;;
+    *)
+        echo "Invalid scaling factor."
+        usage
+        ;;
+esac
+
+# Apply configuration changes
+echo "Xft.dpi: $DPI" | xrdb -merge
+sed -E -i "s/height = [0-9]+/height = $HEIGHT/" ~/.config/polybar/config.ini
+sed -E -i "s/line-size = [0-9]+/line-size = $LINE_SIZE/" ~/.config/polybar/config.ini
+sed -E -i "s/pixelsize=[0-9]+/pixelsize=$FONT_SIZE/" ~/.config/polybar/config.ini
+sed -E -i "s/default_border pixel [0-9]+/default_border pixel $BORDER_SIZE/" ~/.config/i3/config
+
+echo "Scaling factor $SCALING_FACTOR applied."
