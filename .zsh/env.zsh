@@ -21,4 +21,6 @@ if [ -z "$RUNNING_IN_DOCKER" ]; then
     eval "$(pyenv init -)"
 fi
 
+eval `keychain --eval ~/.ssh/id_ed25519 ~/.ssh/id_ed25519_gh`
+
 # source "/etc/profile.d/rvm.sh"
