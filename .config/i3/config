@@ -123,7 +123,7 @@ bindsym $mod+a focus parent
 #bindsym $mod+d focus child
 
 # Disable title bars except in a stacked or tabbed layout
-default_border pixel 3
+default_border pixel 5
 # class                 border  backgr. text    indicator child_border                                                                     
 client.focused_inactive #0d1010 #212121 #d9d9d9 #0d1010 #063340
 client.unfocused        #0d1010 #212121 #d9d9d9 #424242 #063340
