@@ -3,6 +3,11 @@
 [user]
     email = karel.lievens@barco.com
     name = Lievens, Karel
+    signingkey = ~/.ssh/id_ed25519_gh.pub
+[commit]
+    gpgsign = true
+[gpg]
+    format = ssh
 [core]
     editor = lvim
 [rebase]
