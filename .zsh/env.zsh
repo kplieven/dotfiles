@@ -21,6 +21,16 @@ if [ -z "$RUNNING_IN_DOCKER" ]; then
     eval "$(pyenv init -)"
 fi
 
-eval `keychain --eval ~/.ssh/id_ed25519 ~/.ssh/id_ed25519_gh`
+# Start the ssh-agent
+if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+    ssh-agent > "$HOME/.ssh/ssh-agent.env"
+fi
+
+# Load the ssh-agent environment variables
+if [ -f "$HOME/.ssh/ssh-agent.env" ]; then
+    . "$HOME/.ssh/ssh-agent.env" > /dev/null
+fi
+
+ssh-add -k -q "$HOME/.ssh/id_ed25519_gh"
 
 # source "/etc/profile.d/rvm.sh"
