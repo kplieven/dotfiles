@@ -1,0 +1,157 @@
+@import "frappe.css";
+
+* {
+  font-family: JetBrainsMono Nerd Font;
+  font-size: 14px;
+  min-height: 0;
+}
+
+#waybar {
+  background: rgba(0, 0, 0, 0.4);
+  color: @text;
+  margin: 0px;
+}
+
+#workspaces {
+  border-radius: 0 0 1rem 1rem;
+  margin: 5px;
+  background-color: @surface0;
+  margin-left: 1rem;
+}
+
+#workspaces button {
+  color: @lavender;
+  border-top: 4px solid #34495e;
+  border-radius: 0 0 1rem 1rem;
+  padding: 0.4rem;
+}
+
+#workspaces button.active {
+  color: @sky;
+  border-radius: 0 0 1rem 1rem;
+}
+
+#workspaces button:hover {
+  color: @sapphire;
+  border-radius: 0 0 1rem 1rem;
+}
+
+#workspaces button.focused {
+  border-top: 4px solid @sky;
+  border-radius: 0 0 1rem 1rem;
+}
+
+#custom-music {
+  background-color: @surface0;
+  color: @spotify;
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+  margin: 5px 0;
+}
+
+#custom-music:hover {
+  background-color: @spotify-hover;
+}
+
+#disk,
+#backlight,
+#clock,
+#battery,
+#pulseaudio,
+#custom-lock,
+#custom-power {
+  background-color: @surface0;
+  padding: 0.5rem 1rem;
+  margin: 5px 0;
+}
+
+#clock {
+  color: @blue;
+  border-radius: 0px 1rem 1rem 0px;
+  margin-right: 1rem;
+}
+
+#clock:hover {
+  background-color: @sky-hover;
+}
+
+#battery {
+  color: @green;
+}
+
+#battery.charging {
+  color: @green;
+}
+
+#battery.warning:not(.charging) {
+  color: @red;
+}
+
+#battery:hover {
+  background-color: @sky-hover;
+}
+
+#backlight {
+  color: @yellow;
+}
+
+#backlight:hover {
+  background-color: @sky-hover;
+}
+
+#backlight, #battery {
+    border-radius: 0;
+}
+
+#pulseaudio {
+  color: @maroon;
+}
+
+#pulseaudio:hover {
+  background-color: @sky-hover;
+}
+
+#disk {
+  border-radius: 1rem 0px 0px 1rem;
+  margin-left: 1rem;
+}
+
+#disk:hover {
+  background-color: @sky-hover;
+}
+
+#custom-lock {
+    border-radius: 1rem 0px 0px 1rem;
+    color: @lavender;
+}
+
+#custom-lock:hover {
+    color: @sky;
+    background-color: @sky-hover;
+}
+
+#custom-power {
+    margin-right: 1rem;
+    border-radius: 0px 1rem 1rem 0px;
+    color: @red;
+}
+
+#custom-power:hover {
+  background-color: @sky-hover;
+}
+
+#tray {
+  margin: 5px;
+  background-color: @surface0;
+  margin-right: 1rem;
+  border-radius: 1rem;
+}
+
+#tray * {
+  border-radius: 1rem;
+  padding: 0.4rem;
+}
+
+#tray *:hover {
+  background-color: @sky-hover;
+}
