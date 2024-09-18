@@ -39,7 +39,7 @@
     wtf = !git add -u && git commit -m \"$(curl --silent --fail https://whatthecommit.com/index.txt)\"
 
 [push]
-	autoSetupRemote = true
-	default = current
+    autoSetupRemote = true
+    default = current
 [credential]
-	helper = store
+    helper = store
