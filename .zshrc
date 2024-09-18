@@ -7,7 +7,11 @@ config_files=(
     "prompt.zsh"
 )
 
+# zmodload zsh/zprof
+
 for config in $config_files; do 
     # echo "Configuring $config"
     source $HOME/.zsh/$config
 done
+
+# zprof
