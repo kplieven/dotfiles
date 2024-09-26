@@ -1,10 +1,10 @@
 config_files=(
     "completion.zsh"
     "env.zsh"
-    "aliases.zsh"
     "antigen.zsh"
     "plugins.zsh"
     "prompt.zsh"
+    "aliases.zsh"
 )
 
 # zmodload zsh/zprof
