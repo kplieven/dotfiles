@@ -1,7 +1,5 @@
 LLVM_DIR=$HOME/Repositories/llvm-project/
 
-export PROFILE_DIR="$HOME/Brewery/w3phoenix/tools/w3phoenix-sdk"
-
 export GTEST_COLOR=yes
 
 export PATH="$HOME/.local/bin:$PATH"
