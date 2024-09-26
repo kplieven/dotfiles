@@ -244,7 +244,7 @@ bindsym $mod+F12 exec wlogout
 bindsym $mod+shift+s exec grim -g "$(slurp -d)" - | wl-copy
 
 # Background
-exec --no-startup-id /home/karlie/.local/bin/random_sway_bg
+exec "/home/karlie/.local/bin/random_sway_bg"
 
 exec_always {
   pkill kanshi
