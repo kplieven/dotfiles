@@ -5,6 +5,20 @@ local luasnip = require 'luasnip'
 require('luasnip.loaders.from_vscode').lazy_load()
 luasnip.config.setup {}
 
+local format = {
+  format = function(_, vim_item)
+    local max_len = 40
+    if vim_item.menu then
+      vim_item.menu = (#vim_item.menu > max_len)
+          and string.sub(vim_item.menu, 1, max_len - 3) .. "..."
+          or vim_item.menu
+    else
+      vim_item.menu = ""
+    end
+    return vim_item
+  end,
+}
+
 cmp.setup {
   snippet = {
     expand = function(args)
@@ -44,10 +58,16 @@ cmp.setup {
     end, { 'i', 's' }),
   },
   sources = {
+    { name = 'copilot' },
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
     { name = 'path' },
   },
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  },
+  formatting = format,
 }
 
 -- vim: ts=2 sts=2 sw=2 et
