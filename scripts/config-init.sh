@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
 
-git clone --bare https://github.com/kplieven/dotfiles.git $HOME/.dotfiles
+DOTFILES_DIR="$HOME/.dotfiles"
+REPO_URL="https://github.com/kplieven/dotfiles.git"
+
+if [ ! -d "$DOTFILES_DIR" ]; then
+  # Clone the repository
+  git clone --bare "$REPO_URL" "$DOTFILES_DIR"
+fi
 
 # define config alias locally since the dotfiles
 # aren't installed on the system yet
 function config {
-  git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@
+  git --git-dir="$DOTFILES_DIR" --work-tree=$HOME $@
 }
 
 # create a directory to backup existing dotfiles to
