@@ -22,9 +22,11 @@ vim.keymap.set('n', 'H', ':bprev<CR>')
 vim.keymap.set('n', '<S-Left>', ':bprev<CR>')
 vim.keymap.set('n', '<S-Right>', ':bnext<CR>')
 vim.keymap.set('n', '<C-Left>', '<C-W>h')
+vim.keymap.set('n', '<C-H>', '<C-W>h')
 vim.keymap.set('n', '<C-Down>', '<C-W>j')
 vim.keymap.set('n', '<C-Up>', '<C-W>k')
 vim.keymap.set('n', '<C-Right>', '<C-W>l')
+vim.keymap.set('n', '<C-L>', '<C-W>l')
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
