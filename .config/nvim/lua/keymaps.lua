@@ -53,3 +53,6 @@ vim.keymap.set('n', 'yl', ':YankLocation<CR>', { desc = "[Y]ank current [L]ocati
 
 -- Remove highlighting
 vim.keymap.set('n', '<leader>h', ':nohlsearch<CR>', { desc = "Remove [H]ighlighting" })
+
+-- Copilot chat keymaps
+vim.keymap.set('n', '<leader><Tab>', ':CopilotChatToggle<CR>', { desc = "Toggle Copilot Chat" })
