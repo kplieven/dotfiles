@@ -25,6 +25,9 @@ fi
 config checkout
 config config status.showUntrackedFiles no
 
+mkdir -p $HOME/.local/bin
 for FILE in $HOME/scripts/bin/*; do
-    ln -s $FILE $HOME/.local/bin/
+    if [ ! -f $HOME/.local/bin/$(basename $FILE) ]; then
+      ln -s $FILE $HOME/.local/bin/
+    fi
 done
