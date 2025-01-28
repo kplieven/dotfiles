@@ -230,6 +230,10 @@ bar {
     swaybar_command waybar
 }
 
+input "type:keyboard" {
+    xkb_options caps:escape
+}
+
 # Gaps
 gaps inner 5
 gaps outer 0
