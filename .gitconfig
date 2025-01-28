@@ -9,7 +9,7 @@
 [gpg]
     format = ssh
 [core]
-    editor = lvim
+    editor = nvim
 [rebase]
     autosquash = true
 [alias]
