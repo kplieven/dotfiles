@@ -78,3 +78,6 @@ require 'custom.bufferline-setup'
 
 -- (codesnap)
 require 'custom.codesnap-setup'
+
+-- (copilot-chat)
+require 'custom.copilot-chat-setup'
