@@ -45,7 +45,7 @@ require('CopilotChat').setup({
 })
 
 -- Optional: Add some useful keymaps
-vim.keymap.set('n', '<leader>cc', '<cmd>CopilotChatToggle<cr>', { desc = 'Toggle Copilot Chat' })
+vim.keymap.set({'n', 'v'}, '<leader>cc', '<cmd>CopilotChatToggle<cr>', { desc = 'Toggle Copilot Chat' })
 vim.keymap.set('v', '<leader>ce', '<cmd>CopilotChatExplain<cr>', { desc = 'Explain selected code' })
 vim.keymap.set('v', '<leader>cr', '<cmd>CopilotChatReview<cr>', { desc = 'Review selected code' })
 vim.keymap.set('v', '<leader>cf', '<cmd>CopilotChatFix<cr>', { desc = 'Fix selected code' })
