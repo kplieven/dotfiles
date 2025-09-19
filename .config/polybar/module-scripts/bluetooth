@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+is_powered() {
+  bluetoothctl show | awk -F': ' '/Powered:/ {print $2}' | grep -qx "yes"
+}
+
+connected_name() {
+  bluetoothctl info 2>/dev/null | awk -F': ' '/^Name:/{$1=""; sub(/^ /,""); print; exit}'
+}
+
+bt_battery_from_upower() {
+  # Find UPower devices that map to BlueZ (BT) and are present
+  while IFS= read -r dev; do
+    info="$(upower -i "$dev" 2>/dev/null || true)"
+    # Must be a BlueZ-backed device and present
+    if printf '%s\n' "$info" | grep -q 'native-path:.*org/bluez' && \
+       printf '%s\n' "$info" | grep -q 'percentage'; then
+      pct="$(printf '%s\n' "$info" | sed -n 's/^[[:space:]]*percentage:[[:space:]]*//p')"
+      model="$(printf '%s\n' "$info" | sed -n 's/^[[:space:]]*model:[[:space:]]*//p')"
+      if [ -n "${pct:-}" ]; then
+        name="${model:-$(connected_name || true)}"
+        [ -n "$name" ] && echo "${name} (${pct})" && return 0
+        echo "${pct}" && return 0
+      fi
+    fi
+  done < <(upower -e | grep -E '(headset|keyboard|mouse|controller|dev_[A-F0-9_]+)' || true)
+  return 1
+}
+
+main() {
+  if ! is_powered; then
+    echo "Off"
+    exit 0
+  fi
+
+  if out="$(bt_battery_from_upower 2>/dev/null)"; then
+    echo "$out"
+    exit 0
+  fi
+
+  if name="$(connected_name || true)"; [ -n "${name:-}" ]; then
+    echo "$name"
+  else
+    echo "No Device"
+  fi
+}
+
+main
+
