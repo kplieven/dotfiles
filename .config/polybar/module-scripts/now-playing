@@ -197,10 +197,13 @@ def print_text():
         print("", flush = True)
         return
     scroll()
-    print(display_prefix + " " +
-        "%%{T%d}" % (font_index) +
-        make_visual_len(display_text, message_display_len) +
-        "%{T-}" + display_suffix, flush=True)
+    print(
+        display_prefix +
+        "%%{A:playerctl play-pause:}%%{T%d}%s%%{T-}%%{A}" % (
+            font_index,
+            make_visual_len(display_text, message_display_len)
+        ) + display_suffix, flush=True
+    )
 
 def main():
     global current_player, players
