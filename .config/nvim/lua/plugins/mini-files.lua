@@ -2,7 +2,11 @@ local deps = require('mini.deps')
 
 deps.add({ source = 'echasnovski/mini.files' })
 
-require('mini.files').setup()
+require('mini.files').setup({
+    mappings = {
+        go_in_plus = '<CR>',
+    }
+})
 
 vim.keymap.set('n', '<leader>e', function()
     require('mini.files').open()
