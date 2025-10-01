@@ -131,11 +131,12 @@ bindsym $mod+a focus parent
 #bindsym $mod+d focus child
 
 # Disable title bars except in a stacked or tabbed layout
-default_border pixel 2
+default_border pixel 3
 # class                 border  backgr. text    indicator child_border
 client.focused_inactive #0d1010 #212121 #d9d9d9 #0d1010 #063340
 client.unfocused        #0d1010 #212121 #d9d9d9 #424242 #063340
-client.focused          #2980b9 #2980b9 #fefefe #d9d9d9 #2980b9
+client.focused          #5294e2 #5294e2 #fefefe #5294e2 #5294e2
+client.urgent           #2f343a #ff6161 #ffffff #ff6161 #ff6161
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
