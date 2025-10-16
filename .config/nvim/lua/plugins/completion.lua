@@ -3,7 +3,7 @@ local deps = require('mini.deps')
 deps.add({
     source = 'saghen/blink.cmp',
     depends = {
-        'giuxtaposition/blink-cmp-copilot',
+        'fang2hou/blink-copilot'
     },
     hooks = {
         post_install = function()
@@ -44,7 +44,7 @@ require('blink.cmp').setup({
         providers = {
             copilot = {
                 name = 'copilot',
-                module = 'blink-cmp-copilot',
+                module = 'blink-copilot',
                 score_offset = 100,
                 async = true,
             },
@@ -67,20 +67,3 @@ require('blink.cmp').setup({
         ghost_text = { enabled = true, show_with_menu = false },
     },
 })
-
-local function show_copilot_only()
-    require('blink.cmp').show({
-        sources = { 'copilot' }
-    })
-end
-
-vim.api.nvim_create_user_command('CopilotSuggest', show_copilot_only, { desc = 'Show Copilot suggestions' })
-
-vim.keymap.set('n', '<leader>cp', function()
-    vim.cmd('startinsert')
-    vim.defer_fn(function()
-        show_copilot_only()
-    end, 50)
-end, { desc = 'Show Copilot suggestions' })
-
-vim.keymap.set('i', '<C-g>', show_copilot_only, { desc = 'Show Copilot completions' })
