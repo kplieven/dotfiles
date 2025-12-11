@@ -3,34 +3,10 @@ local deps = require('mini.deps')
 deps.add({
     source = 'saghen/blink.cmp',
     depends = {
+        'rafamadriz/friendly-snippets',
         'fang2hou/blink-copilot'
     },
-    hooks = {
-        post_install = function()
-            local plugin_path = vim.fn.stdpath('data') .. '/site/pack/deps/opt/blink.cmp'
-            print('Building Blink...')
-            local result = vim.fn.system('cd ' .. plugin_path .. ' && cargo build --release')
-            local exit_code = vim.v.shell_error
-
-            if exit_code == 0 then
-                print('Blink build successful!')
-            else
-                print('Blink build failed: ', result)
-            end
-        end,
-        post_update = function()
-            local plugin_path = vim.fn.stdpath('data') .. '/site/pack/deps/opt/blink.cmp'
-            print('Rebuilding Blink...')
-            local result = vim.fn.system('cd ' .. plugin_path .. ' && cargo build --release')
-            local exit_code = vim.v.shell_error
-
-            if exit_code == 0 then
-                print('Blink rebuild successful!')
-            else
-                print('Blink rebuild failed: ', result)
-            end
-        end,
-    }
+    checkout = 'v1.8.0',
 })
 
 require('blink.cmp').setup({
