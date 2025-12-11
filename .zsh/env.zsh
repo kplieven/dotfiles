@@ -16,9 +16,9 @@ export CDPATH=.:$HOME/Repositories/Barco
 
 source $HOME/.cargo/env
 
-if [ -z "$RUNNING_IN_DOCKER" ]; then
-    export PYENV_ROOT="$HOME/.pyenv"
-    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+PYENV_PATH="$HOME/.pyenv"
+if [ -d "$PYENV_PATH" ]; then
+    command -v pyenv >/dev/null || export PATH="$PYENV_PATH/bin:$PATH"
     eval "$(pyenv init -)"
 fi
 
