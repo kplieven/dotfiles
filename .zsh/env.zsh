@@ -5,6 +5,7 @@ export GTEST_COLOR=yes
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$LLVM_DIR/build/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
+export PATH=$HOME/.opencode/bin:$PATH
 
 FNM_PATH="/home/karlie/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
