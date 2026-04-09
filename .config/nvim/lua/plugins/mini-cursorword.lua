@@ -1,5 +1,3 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'nvim-mini/mini.cursorword', checkout = 'stable' })
+vim.pack.add({ { src = 'https://github.com/nvim-mini/mini.cursorword', version = 'stable' } })
 
 require('mini.cursorword').setup()

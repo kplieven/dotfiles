@@ -1,14 +1,22 @@
-local path_package = vim.fn.stdpath('data') .. '/site/'
-local mini_path = path_package .. 'pack/deps/start/mini.deps'
+-- Build hooks (must be registered before any vim.pack.add calls)
+vim.api.nvim_create_autocmd('PackChanged', {
+    callback = function(ev)
+        local name, kind = ev.data.spec.name, ev.data.kind
+        if kind ~= 'install' and kind ~= 'update' then return end
 
-if not vim.uv.fs_stat(mini_path) then
-    vim.cmd('echo "Installing `mini.deps`" | redraw')
-    local clone_cmd = { 'git', 'clone', '--filter=blob:none', 'https://github.com/echasnovski/mini.deps', mini_path }
-    vim.fn.system(clone_cmd)
-    vim.cmd('packadd mini.deps | helptags ALL')
-end
+        if name == 'nvim-treesitter' then
+            vim.cmd('TSUpdate')
+        elseif name == 'CopilotChat.nvim' then
+            vim.system({ 'make', 'tiktoken' }, { cwd = ev.data.path })
+        elseif name == 'codesnap.nvim' then
+            vim.system({ 'make' }, { cwd = ev.data.path })
+        end
+    end,
+})
 
-require('mini.deps').setup({ path = { package = path_package } })
+vim.api.nvim_create_user_command('PackUpdate', function()
+    require('vim.pack').update()
+end, { desc = 'Update all plugins' })
 
 -- Load plugin configurations
 require("plugins.which-key")
@@ -17,7 +25,7 @@ require("plugins.completion")
 require("plugins.lsp")
 require("plugins.treesitter")
 require("plugins.colorscheme")
-require("plugins.codesnap")
+-- require("plugins.codesnap")
 require("plugins.neoscroll")
 require("plugins.alpha")
 require("plugins.mini-icons")

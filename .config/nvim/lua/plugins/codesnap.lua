@@ -1,34 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({
-    source = 'mistricky/codesnap.nvim',
-    hooks = {
-        post_install = function()
-            local plugin_path = vim.fn.stdpath('data') .. '/site/pack/deps/opt/codesnap.nvim'
-            print('Building CodeSnap...')
-            local result = vim.fn.system('cd ' .. plugin_path .. ' && make')
-            local exit_code = vim.v.shell_error
-
-            if exit_code == 0 then
-                print('CodeSnap build successful!')
-            else
-                print('CodeSnap build failed: ', result)
-            end
-        end,
-        post_update = function()
-            local plugin_path = vim.fn.stdpath('data') .. '/site/pack/deps/opt/codesnap.nvim'
-            print('Rebuilding CodeSnap...')
-            local result = vim.fn.system('cd ' .. plugin_path .. ' && make')
-            local exit_code = vim.v.shell_error
-
-            if exit_code == 0 then
-                print('CodeSnap rebuild successful!')
-            else
-                print('CodeSnap rebuild failed: ', result)
-            end
-        end,
-    }
-})
+vim.pack.add({ 'https://github.com/mistricky/codesnap.nvim' })
 
 require('codesnap').setup({
     watermark = '',

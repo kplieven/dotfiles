@@ -1,6 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'echasnovski/mini.diff' })
+vim.pack.add({ 'https://github.com/echasnovski/mini.diff' })
 
 require('mini.diff').setup({
     view = {

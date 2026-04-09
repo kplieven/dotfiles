@@ -1,6 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'goolord/alpha-nvim' })
+vim.pack.add({ 'https://github.com/goolord/alpha-nvim' })
 
 local alpha = require('alpha')
 local dashboard = require('alpha.themes.dashboard')

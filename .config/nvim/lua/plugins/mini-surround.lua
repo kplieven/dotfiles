@@ -1,6 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'nvim-mini/mini.surround', checkout = 'stable' })
+vim.pack.add({ { src = 'https://github.com/nvim-mini/mini.surround', version = 'stable' } })
 
 vim.keymap.set({ 'n', 'x' }, 's', '<Nop>')
 

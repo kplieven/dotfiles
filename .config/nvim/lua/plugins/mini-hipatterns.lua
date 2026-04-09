@@ -1,6 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'nvim-mini/mini.hipatterns', checkout = 'stable' })
+vim.pack.add({ { src = 'https://github.com/nvim-mini/mini.hipatterns', version = 'stable' } })
 
 local hipatterns = require('mini.hipatterns')
 hipatterns.setup({

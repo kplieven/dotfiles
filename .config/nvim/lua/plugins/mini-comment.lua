@@ -1,6 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'echasnovski/mini.comment' })
+vim.pack.add({ 'https://github.com/echasnovski/mini.comment' })
 
 require('mini.comment').setup()
 

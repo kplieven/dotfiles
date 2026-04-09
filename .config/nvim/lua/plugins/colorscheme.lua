@@ -1,6 +1,6 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'catppuccin/nvim', name = 'catppuccin' })
-deps.add({ source = 'folke/tokyonight.nvim', name = 'tokyonight' })
+vim.pack.add({
+    { src = 'https://github.com/catppuccin/nvim', name = 'catppuccin' },
+    'https://github.com/folke/tokyonight.nvim',
+})
 
 vim.cmd.colorscheme 'tokyonight-night'

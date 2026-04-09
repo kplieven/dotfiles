@@ -1,12 +1,7 @@
-local deps = require('mini.deps')
-
-deps.add({
-    source = 'saghen/blink.cmp',
-    depends = {
-        'rafamadriz/friendly-snippets',
-        'fang2hou/blink-copilot'
-    },
-    checkout = 'v1.8.0',
+vim.pack.add({
+    { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range('1') },
+    'https://github.com/rafamadriz/friendly-snippets',
+    'https://github.com/fang2hou/blink-copilot',
 })
 
 require('blink.cmp').setup({

@@ -1,8 +1,8 @@
-local deps = require('mini.deps')
-
-deps.add('williamboman/mason.nvim')
-deps.add('williamboman/mason-lspconfig.nvim')
-deps.add('neovim/nvim-lspconfig')
+vim.pack.add({
+    'https://github.com/williamboman/mason.nvim',
+    'https://github.com/williamboman/mason-lspconfig.nvim',
+    'https://github.com/neovim/nvim-lspconfig',
+})
 
 require('mason').setup()
 -- Setup mason-lspconfig with the NEW API
