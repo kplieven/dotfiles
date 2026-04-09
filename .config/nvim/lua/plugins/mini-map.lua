@@ -1,6 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'nvim-mini/mini.map', checkout = 'stable' })
+vim.pack.add({ { src = 'https://github.com/nvim-mini/mini.map', version = 'stable' } })
 
 local map = require('mini.map')
 

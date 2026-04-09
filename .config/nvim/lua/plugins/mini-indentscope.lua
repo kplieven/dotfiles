@@ -1,6 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'nvim-mini/mini.indentscope', checkout = 'stable' })
+vim.pack.add({ { src = 'https://github.com/nvim-mini/mini.indentscope', version = 'stable' } })
 
 local indentscope = require('mini.indentscope')
 indentscope.setup({

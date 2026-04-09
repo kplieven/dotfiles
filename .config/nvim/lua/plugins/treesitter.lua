@@ -1,12 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({
-    source = 'nvim-treesitter/nvim-treesitter',
-    hooks = {
-        post_install = function() vim.cmd('TSUpdate') end,
-        post_update  = function() vim.cmd('TSUpdate') end,
-    },
-})
+vim.pack.add({ 'https://github.com/nvim-treesitter/nvim-treesitter' })
 
 require('nvim-treesitter').setup()
 

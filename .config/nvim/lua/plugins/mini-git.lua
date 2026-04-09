@@ -1,6 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'nvim-mini/mini-git', checkout = 'stable' })
+vim.pack.add({ { src = 'https://github.com/nvim-mini/mini-git', version = 'stable' } })
 
 require('mini.git').setup()
 

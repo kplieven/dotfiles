@@ -1,5 +1,3 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'nvim-mini/mini.statusline', checkout = 'stable' })
+vim.pack.add({ { src = 'https://github.com/nvim-mini/mini.statusline', version = 'stable' } })
 
 require('mini.statusline').setup()

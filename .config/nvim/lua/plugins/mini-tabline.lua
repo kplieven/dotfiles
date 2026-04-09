@@ -1,6 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'nvim-mini/mini.tabline', checkout = 'stable' })
+vim.pack.add({ { src = 'https://github.com/nvim-mini/mini.tabline', version = 'stable' } })
 
 require('mini.tabline').setup({
     show_icons = true,

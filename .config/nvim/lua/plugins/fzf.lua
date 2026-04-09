@@ -1,6 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'ibhagwan/fzf-lua' })
+vim.pack.add({ 'https://github.com/ibhagwan/fzf-lua' })
 
 require('fzf-lua').setup({
   winopts = {

@@ -1,5 +1,3 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'nvim-mini/mini.pairs', checkout = 'stable' })
+vim.pack.add({ { src = 'https://github.com/nvim-mini/mini.pairs', version = 'stable' } })
 
 require('mini.pairs').setup()

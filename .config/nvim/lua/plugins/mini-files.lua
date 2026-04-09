@@ -1,6 +1,4 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'echasnovski/mini.files' })
+vim.pack.add({ 'https://github.com/echasnovski/mini.files' })
 
 require('mini.files').setup({
     mappings = {

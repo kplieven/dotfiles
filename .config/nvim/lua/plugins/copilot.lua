@@ -1,24 +1,7 @@
-local deps = require('mini.deps')
-
-deps.add({
-    source = 'CopilotC-Nvim/CopilotChat.nvim',
-    checkout = 'main',
-    depends = {
-        'zbirenbaum/copilot.lua',
-        'nvim-lua/plenary.nvim',
-    },
-    hooks = {
-        post_install = function()
-            local plugin_path = vim.fn.stdpath('data') .. '/site/pack/deps/opt/CopilotChat.nvim'
-            vim.notify('Building CopilotChat...', vim.log.levels.INFO)
-            local out = vim.system({ 'make', 'tiktoken' }, { cwd = plugin_path }):wait()
-            if out.code == 0 then
-                vim.notify('CopilotChat build successful!', vim.log.levels.INFO)
-            else
-                vim.notify('CopilotChat build failed: ' .. (out.stderr or ''), vim.log.levels.ERROR)
-            end
-        end,
-    }
+vim.pack.add({
+    'https://github.com/zbirenbaum/copilot.lua',
+    'https://github.com/nvim-lua/plenary.nvim',
+    { src = 'https://github.com/CopilotC-Nvim/CopilotChat.nvim', version = 'main' },
 })
 
 require('copilot').setup({

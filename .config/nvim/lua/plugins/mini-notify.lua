@@ -1,5 +1,3 @@
-local deps = require('mini.deps')
-
-deps.add({ source = 'nvim-mini/mini.notify', checkout = 'stable' })
+vim.pack.add({ { src = 'https://github.com/nvim-mini/mini.notify', version = 'stable' } })
 
 require('mini.notify').setup()
