@@ -23,4 +23,7 @@ if [ -d "$PYENV_PATH" ]; then
     eval "$(pyenv init -)"
 fi
 
+# VSCode shell integration
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+
 # source "/etc/profile.d/rvm.sh"
