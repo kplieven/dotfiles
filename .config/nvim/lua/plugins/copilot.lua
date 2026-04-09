@@ -41,7 +41,7 @@ require('copilot').setup({
 })
 
 require('CopilotChat').setup({
-    debug = true,
+    debug = false,
 })
 
 -- Optional: Add some useful keymaps
