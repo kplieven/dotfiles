@@ -33,4 +33,14 @@ require('fzf-lua').setup({
 })
 
 local fzf = require('fzf-lua')
-vim.keymap.set('n', '<leader>st', fzf.grep_project, { desc = 'Live Grep' })
+
+vim.keymap.set('n', '<leader>f',  fzf.files,       { desc = 'Find files' })
+vim.keymap.set('n', '<leader>st', fzf.live_grep,   { desc = 'Live grep' })
+vim.keymap.set('n', '<leader>sr', fzf.resume,      { desc = 'Resume previous search' })
+vim.keymap.set('n', '<leader>sw', fzf.grep_cword,  { desc = 'Search current word' })
+vim.keymap.set('n', '<leader>sb', fzf.buffers,     { desc = 'Search open buffers' })
+
+local wk = require('which-key')
+wk.add({
+    { '<leader>s', group = 'Search' },
+})
