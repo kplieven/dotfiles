@@ -67,7 +67,7 @@ LABELS=(
     "Neovim         — build from source, sync plugins"
     "Git tools      — lazygit"
     "Terminal       — kitty, JetBrains Mono Nerd Font"
-    "Desktop (X11)  — i3, polybar, dunst, i3status-rust"
+    "Desktop (X11)  — i3, picom, polybar, dunst, i3status-rust"
     "Desktop (Sway) — sway, waybar, kanshi"
 )
 
@@ -359,7 +359,7 @@ install_terminal() {
 install_desktop_x11() {
     info "Installing X11 desktop tools..."
 
-    sudo apt-get install -y i3 dunst
+    sudo apt-get install -y i3 dunst picom
 
     # polybar
     sudo apt-get install -y polybar 2>/dev/null || warn "polybar not in apt, install manually"
