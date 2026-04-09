@@ -10,26 +10,12 @@ deps.add({
     hooks = {
         post_install = function()
             local plugin_path = vim.fn.stdpath('data') .. '/site/pack/deps/opt/CopilotChat.nvim'
-            print('Building CopilotChat...')
-            local result = vim.fn.system('cd ' .. plugin_path .. ' && make tiktoken')
-            local exit_code = vim.v.shell_error
-
-            if exit_code == 0 then
-                print('CopilotChat build successful!')
+            vim.notify('Building CopilotChat...', vim.log.levels.INFO)
+            local out = vim.system({ 'make', 'tiktoken' }, { cwd = plugin_path }):wait()
+            if out.code == 0 then
+                vim.notify('CopilotChat build successful!', vim.log.levels.INFO)
             else
-                print('CopilotChat build failed:', result)
-            end
-        end,
-        post_update = function()
-            local plugin_path = vim.fn.stdpath('data') .. '/site/pack/deps/opt/CopilotChat.nvim'
-            print('Rebuilding CopilotChat...')
-            local result = vim.fn.system('cd ' .. plugin_path .. ' && make tiktoken')
-            local exit_code = vim.v.shell_error
-
-            if exit_code == 0 then
-                print('CopilotChat rebuild successful!')
-            else
-                print('CopilotChat rebuild failed:', result)
+                vim.notify('CopilotChat build failed: ' .. (out.stderr or ''), vim.log.levels.ERROR)
             end
         end,
     }
