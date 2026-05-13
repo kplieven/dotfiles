@@ -7,9 +7,9 @@ alias s='kitty +kitten ssh'
 # trick to enable running aliases as root
 alias sudo='sudo '
 
-which exa > /dev/null 2>&1
+which eza > /dev/null 2>&1
 if [ $? -eq 0 ]; then
-  alias ll='exa -albh --icons --color=auto --group-directories-first'
+  alias ll='eza -albh --icons --color=auto --group-directories-first'
 else
   alias ll='ls -alh --color=auto'
 fi
