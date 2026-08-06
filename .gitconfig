@@ -1,9 +1,9 @@
 [pull]
     rebase = true
 [user]
-    email = karel.lievens@barco.com
-    name = Lievens, Karel
-    signingkey = ~/.ssh/id_ed25519_gh.pub
+    email = lvnskarel@gmail.com
+    name = Karel Lievens
+    signingkey = ~/.ssh/id_ed25519_gh_personal.pub
 [commit]
     gpgsign = true
 [gpg]
@@ -43,3 +43,7 @@
     default = current
 [credential]
     helper = store
+; Work identity, scoped to the Barco tree. Must stay AFTER [user] above:
+; later values win, so this overrides the personal default only in there.
+[includeIf "gitdir:~/Repositories/Barco/"]
+    path = ~/.gitconfig-barco
