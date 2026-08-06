@@ -251,7 +251,7 @@ install_rust() {
     [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
     info "Installing cargo CLI tools (this may take a while)..."
-    local tools=(eza ripgrep bat fd-find starship bottom rm-improved)
+    local tools=(eza ripgrep bat fd-find starship bottom rm-improved tree-sitter-cli)
     for tool in "${tools[@]}"; do
         cargo install "$tool" 2>/dev/null && ok "$tool" || fail "$tool"
     done
