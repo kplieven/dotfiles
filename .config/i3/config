@@ -261,5 +261,5 @@ bindsym $mod+F12 mode "$mode_system"
 bindsym $mod+shift+s exec "flameshot gui"
 
 # Background
-exec --no-startup-id feh --bg-fill -qrzZD 10.0 /home/karlie/Pictures/Wallpapers
+exec --no-startup-id feh --bg-fill -qrzZD 10.0 /home/karlie/Pictures/Wallpapers/DSC_6359.jpg
 
