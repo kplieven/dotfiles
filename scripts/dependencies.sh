@@ -67,7 +67,7 @@ LABELS=(
     "Neovim         — build from source, sync plugins"
     "Git tools      — lazygit"
     "Terminal       — kitty, JetBrains Mono Nerd Font"
-    "Desktop (X11)  — i3, picom, polybar, dunst, i3status-rust"
+    "Desktop (X11)  — i3, betterlockscreen, picom, polybar, dunst, i3status-rust"
     "Desktop (Sway) — sway, waybar, kanshi"
 )
 
@@ -91,7 +91,7 @@ usage() {
     echo "  --nvim             Neovim (built from source)"
     echo "  --git              Lazygit"
     echo "  --terminal         Kitty terminal, JetBrains Mono Nerd Font"
-    echo "  --desktop-x11      i3, polybar, dunst, i3status-rust"
+    echo "  --desktop-x11      i3, betterlockscreen, polybar, dunst, i3status-rust"
     echo "  --desktop-wayland  Sway, waybar, kanshi"
     echo "  --help             Show this help message"
     echo ""
@@ -388,7 +388,15 @@ install_terminal() {
 install_desktop_x11() {
     info "Installing X11 desktop tools..."
 
-    sudo apt-get install -y i3 dunst picom rofi feh flameshot
+    sudo apt-get install -y i3 dunst picom rofi feh flameshot wget
+
+    # betterlockscreen
+    if ! command -v betterlockscreen &>/dev/null; then
+        wget https://raw.githubusercontent.com/betterlockscreen/betterlockscreen/main/install.sh -O - -q | bash -s user
+        ok "betterlockscreen installed"
+    else
+        warn "betterlockscreen already installed"
+    fi
 
     # polybar
     sudo apt-get install -y polybar 2>/dev/null || warn "polybar not in apt, install manually"
