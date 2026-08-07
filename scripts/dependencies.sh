@@ -60,9 +60,10 @@ confirm() {
 # ---------------------------------------------------------------------------
 # Categories
 # ---------------------------------------------------------------------------
-CATEGORIES=(shell rust nvim git terminal desktop-x11 desktop-wayland)
+CATEGORIES=(shell build-tools rust nvim git terminal desktop-x11 desktop-wayland)
 LABELS=(
     "Shell          — zsh, antigen, set as default shell"
+    "Build tools    — C/C++ compiler toolchain and build/debug utilities"
     "Rust toolchain — rustup, eza, ripgrep, bat, fd, starship, bottom, rm-improved"
     "Neovim         — build from source, sync plugins"
     "Git tools      — lazygit"
@@ -87,6 +88,7 @@ usage() {
     echo "Options:"
     echo "  --all              Install everything"
     echo "  --shell            Zsh, antigen"
+    echo "  --build-tools      C/C++ build toolchain and utilities"
     echo "  --rust             Rust toolchain and cargo CLI tools"
     echo "  --nvim             Neovim (built from source)"
     echo "  --git              Lazygit"
@@ -108,7 +110,7 @@ if [[ $# -gt 0 ]]; then
             --all)
                 for cat in "${CATEGORIES[@]}"; do SELECTED[$cat]=1; done
                 ;;
-            --shell|--rust|--nvim|--git|--terminal|--desktop-x11|--desktop-wayland)
+            --shell|--build-tools|--rust|--nvim|--git|--terminal|--desktop-x11|--desktop-wayland)
                 SELECTED[${1#--}]=1
                 ;;
             --help)
@@ -260,10 +262,35 @@ install_shell() {
 }
 
 # ---------------------------------------------------------------------------
+# Category: Build tools
+# ---------------------------------------------------------------------------
+install_build_tools() {
+    info "Installing C/C++ build tools..."
+
+    sudo apt-get install -y \
+        build-essential \
+        pkg-config \
+        cmake \
+        ninja-build \
+        meson \
+        clang \
+        lld \
+        gdb \
+        valgrind
+
+    sudo apt-get install -y "linux-headers-$(uname -r)" 2>/dev/null || warn "Kernel headers for current kernel not available in apt"
+
+    ok "Build tools installed"
+}
+
+# ---------------------------------------------------------------------------
 # Category: Rust toolchain
 # ---------------------------------------------------------------------------
 install_rust() {
     info "Installing Rust toolchain..."
+
+    # Common native deps needed by many Rust crates
+    sudo apt-get install -y build-essential pkg-config cmake
 
     if ! command -v rustup &>/dev/null; then
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y --no-modify-path
@@ -348,7 +375,7 @@ install_git() {
 install_terminal() {
     info "Installing terminal tools..."
 
-    sudo apt-get install -y unzip
+    sudo apt-get install -y unzip wget
 
     # kitty
     if ! command -v kitty &>/dev/null; then
@@ -377,6 +404,25 @@ install_terminal() {
         ok "JetBrains Mono Nerd Font installed"
     else
         warn "JetBrains Mono Nerd Font already installed"
+    fi
+
+    # 0xProto Nerd Font
+    local local_fonts_dir="$HOME/.local/share/fonts"
+    mkdir -p "$local_fonts_dir"
+    if compgen -G "$local_fonts_dir/0xProto*.ttf" > /dev/null; then
+        warn "0xProto Nerd Font already installed"
+    else
+        local proto_zip="/tmp/0xProto-main.zip"
+        local proto_extract_dir="/tmp/0xProto-main"
+        rm -f "$proto_zip"
+        rm -rf "$proto_extract_dir"
+        wget -qO "$proto_zip" "https://github.com/0xType/0xProto/archive/refs/heads/main.zip"
+        unzip -qo "$proto_zip" -d /tmp
+        cp "$proto_extract_dir"/fonts/*.ttf "$local_fonts_dir"/
+        fc-cache -fv "$local_fonts_dir"
+        rm -f "$proto_zip"
+        rm -rf "$proto_extract_dir"
+        ok "0xProto Nerd Font installed"
     fi
 
     ok "Terminal tools installed"
@@ -434,12 +480,13 @@ install_desktop_wayland() {
 # ---------------------------------------------------------------------------
 INSTALL_FNS=(
     [0]=install_shell
-    [1]=install_rust
-    [2]=install_nvim
-    [3]=install_git
-    [4]=install_terminal
-    [5]=install_desktop_x11
-    [6]=install_desktop_wayland
+    [1]=install_build_tools
+    [2]=install_rust
+    [3]=install_nvim
+    [4]=install_git
+    [5]=install_terminal
+    [6]=install_desktop_x11
+    [7]=install_desktop_wayland
 )
 
 echo ""
