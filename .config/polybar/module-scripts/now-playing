@@ -16,14 +16,14 @@ font_index = 1
 update_delay = 0.3
 
 # (list) : list of chars containing previous, play, pause, next glyphs for media controls in respective order
-control_chars = ['󰒮','󰐊','󰏤','󰒭']
+control_chars = ['','','','']
 
 # (dict) : dict of char icons to display as prefix.
 # If player name is available as key, then use the corressponding icon,
 # else default key value.
 # example:
 display_player_prefix = {
-    "spotify":  '',
+    "spotify":  '  ',
     "firefox":  '',
     "default":  ''
 }
