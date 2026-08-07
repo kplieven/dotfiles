@@ -84,7 +84,7 @@ CATEGORIES=(shell build-tools rust nvim git terminal desktop-x11 desktop-wayland
 LABELS=(
     "Shell          — zsh, antigen, set as default shell"
     "Build tools    — C/C++ compiler toolchain and build/debug utilities"
-    "Rust toolchain — rustup, eza, ripgrep, bat, fd, starship, bottom, rm-improved"
+    "Rust toolchain — rustup, eza, ripgrep, bat, fd, duf, dust, starship, bottom, rm-improved"
     "Neovim         — build from source, sync plugins"
     "Git tools      — lazygit"
     "Terminal       — kitty, JetBrains Mono Nerd Font"
@@ -323,7 +323,7 @@ install_rust() {
     [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
     info "Installing cargo CLI tools (this may take a while)..."
-    local tools=(eza ripgrep bat fd-find starship bottom rm-improved tree-sitter-cli)
+    local tools=(eza ripgrep bat fd-find duf dust starship bottom rm-improved tree-sitter-cli)
     for tool in "${tools[@]}"; do
         cargo install "$tool" 2>/dev/null && ok "$tool" || fail "$tool"
     done
