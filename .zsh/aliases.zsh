@@ -34,11 +34,6 @@ if [ $? -eq 0 ]; then
   alias du='dust'
 fi
 
-which duf > /dev/null 2>&1
-if [ $? -eq 0 ]; then
-  alias df='duf'
-fi
-
 alias ls='ls --color=auto'
 
 # vim using
