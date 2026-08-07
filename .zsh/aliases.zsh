@@ -14,6 +14,31 @@ else
   alias ll='ls -alh --color=auto'
 fi
 
+which bat > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+  alias cat='bat --style=plain --paging=never'
+fi
+
+which rg > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+  alias grep='rg'
+fi
+
+which fd > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+  alias find='fd'
+fi
+
+which dust > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+  alias du='dust'
+fi
+
+which duf > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+  alias df='duf'
+fi
+
 alias ls='ls --color=auto'
 
 # vim using
