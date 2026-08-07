@@ -129,32 +129,57 @@ fi
 # Interactive menu (when no flags and TTY is available)
 # ---------------------------------------------------------------------------
 show_menu() {
+    local current="$1"
+    local total="${#CATEGORIES[@]}"
+
+    printf '\033[H\033[2J'
     echo ""
-    info "Select categories to install (toggle with number, Enter to confirm):"
+    info "Select categories to install:"
     echo ""
     for i in "${!CATEGORIES[@]}"; do
         local cat="${CATEGORIES[$i]}"
         local marker
+        local cursor=" "
         if [[ ${SELECTED[$cat]} -eq 1 ]]; then
             marker="${GREEN}[x]${RESET}"
         else
             marker="[ ]"
         fi
-        echo -e "  ${BOLD}$((i + 1))${RESET}) ${marker} ${LABELS[$i]}"
+
+        if [[ "$i" -eq "$current" ]]; then
+            cursor="${BLUE}>${RESET}"
+        fi
+
+        echo -e " ${cursor} ${BOLD}$((i + 1))${RESET}) ${marker} ${LABELS[$i]}"
     done
     echo ""
-    echo -e "  ${BOLD}a${RESET}) Select all    ${BOLD}n${RESET}) Select none    ${BOLD}Enter${RESET}) Confirm"
+    echo -e "  ${BOLD}↑/↓${RESET} Move    ${BOLD}Enter${RESET} Toggle    ${BOLD}q${RESET} Confirm    ${BOLD}a${RESET} Select all    ${BOLD}n${RESET} Select none"
     echo ""
 }
 
 interactive_menu() {
-    while true; do
-        show_menu
-        local choice
-        read -rp "$(echo -e "${BOLD}>${RESET} ")" choice
+    local current=0
+    local total="${#CATEGORIES[@]}"
 
-        case "$choice" in
+    printf '\033[?25l'
+    trap 'printf "\033[?25h"' RETURN
+
+    while true; do
+        show_menu "$current"
+        local key
+        IFS= read -rsn1 key
+
+        if [[ "$key" == $'\x1b' ]]; then
+            IFS= read -rsn2 key
+            key=$'\x1b'"$key"
+        fi
+
+        case "$key" in
             "")
+                local cat="${CATEGORIES[$current]}"
+                SELECTED[$cat]=$(( 1 - ${SELECTED[$cat]} ))
+                ;;
+            q|Q)
                 break
                 ;;
             a|A)
@@ -163,13 +188,13 @@ interactive_menu() {
             n|N)
                 for cat in "${CATEGORIES[@]}"; do SELECTED[$cat]=0; done
                 ;;
-            [1-7])
-                local idx=$((choice - 1))
-                local cat="${CATEGORIES[$idx]}"
-                SELECTED[$cat]=$(( 1 - ${SELECTED[$cat]} ))
+            $'\x1b[A')
+                current=$(( (current - 1 + total) % total ))
+                ;;
+            $'\x1b[B')
+                current=$(( (current + 1) % total ))
                 ;;
             *)
-                echo "Invalid input."
                 ;;
         esac
     done
@@ -211,7 +236,7 @@ sudo apt-get update -qq
 install_shell() {
     info "Installing shell tools..."
 
-    sudo apt-get install -y zsh
+    sudo apt-get install -y zsh jq
 
     # antigen
     local antigen_dir="$HOME/.zsh"
@@ -302,6 +327,8 @@ install_nvim() {
 install_git() {
     info "Installing git tools..."
 
+    sudo apt-get install -y git
+
     # lazygit
     local lazygit_version
     lazygit_version=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
@@ -320,6 +347,8 @@ install_git() {
 # ---------------------------------------------------------------------------
 install_terminal() {
     info "Installing terminal tools..."
+
+    sudo apt-get install -y unzip
 
     # kitty
     if ! command -v kitty &>/dev/null; then
@@ -359,7 +388,7 @@ install_terminal() {
 install_desktop_x11() {
     info "Installing X11 desktop tools..."
 
-    sudo apt-get install -y i3 dunst picom
+    sudo apt-get install -y i3 dunst picom rofi feh flameshot
 
     # polybar
     sudo apt-get install -y polybar 2>/dev/null || warn "polybar not in apt, install manually"
@@ -384,7 +413,7 @@ install_desktop_x11() {
 install_desktop_wayland() {
     info "Installing Wayland desktop tools..."
 
-    sudo apt-get install -y sway waybar
+    sudo apt-get install -y sway waybar swaylock swaybg wl-clipboard wlogout
 
     # kanshi
     sudo apt-get install -y kanshi 2>/dev/null || warn "kanshi not in apt, install manually"
