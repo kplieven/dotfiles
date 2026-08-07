@@ -3,7 +3,7 @@
 [user]
     email = lvnskarel@gmail.com
     name = Karel Lievens
-    signingkey = ~/.ssh/id_ed25519_gh_personal.pub
+    signingkey = ~/.ssh/github-personal.pub
 [commit]
     gpgsign = true
 [gpg]
