@@ -57,6 +57,26 @@ confirm() {
     [[ "${reply,,}" != "n" ]]
 }
 
+install_0xproto_font() {
+    local local_fonts_dir="$HOME/.local/share/fonts"
+    mkdir -p "$local_fonts_dir"
+    if compgen -G "$local_fonts_dir/0xProto*.ttf" > /dev/null; then
+        warn "0xProto Nerd Font already installed"
+    else
+        local proto_zip="/tmp/0xProto-main.zip"
+        local proto_extract_dir="/tmp/0xProto-main"
+        rm -f "$proto_zip"
+        rm -rf "$proto_extract_dir"
+        wget -qO "$proto_zip" "https://github.com/0xType/0xProto/archive/refs/heads/main.zip"
+        unzip -qo "$proto_zip" -d /tmp
+        cp "$proto_extract_dir"/fonts/*.ttf "$local_fonts_dir"/
+        fc-cache -fv "$local_fonts_dir"
+        rm -f "$proto_zip"
+        rm -rf "$proto_extract_dir"
+        ok "0xProto Nerd Font installed"
+    fi
+}
+
 # ---------------------------------------------------------------------------
 # Categories
 # ---------------------------------------------------------------------------
@@ -68,7 +88,7 @@ LABELS=(
     "Neovim         — build from source, sync plugins"
     "Git tools      — lazygit"
     "Terminal       — kitty, JetBrains Mono Nerd Font"
-    "Desktop (X11)  — i3, betterlockscreen, picom, polybar, dunst, i3status-rust"
+    "Desktop (X11)  — i3, betterlockscreen, picom, polybar, dunst, 0xProto Nerd Font"
     "Desktop (Sway) — sway, waybar, kanshi"
 )
 
@@ -93,7 +113,7 @@ usage() {
     echo "  --nvim             Neovim (built from source)"
     echo "  --git              Lazygit"
     echo "  --terminal         Kitty terminal, JetBrains Mono Nerd Font"
-    echo "  --desktop-x11      i3, betterlockscreen, polybar, dunst, i3status-rust"
+    echo "  --desktop-x11      i3, betterlockscreen, polybar, dunst, 0xProto Nerd Font"
     echo "  --desktop-wayland  Sway, waybar, kanshi"
     echo "  --help             Show this help message"
     echo ""
@@ -406,24 +426,7 @@ install_terminal() {
         warn "JetBrains Mono Nerd Font already installed"
     fi
 
-    # 0xProto Nerd Font
-    local local_fonts_dir="$HOME/.local/share/fonts"
-    mkdir -p "$local_fonts_dir"
-    if compgen -G "$local_fonts_dir/0xProto*.ttf" > /dev/null; then
-        warn "0xProto Nerd Font already installed"
-    else
-        local proto_zip="/tmp/0xProto-main.zip"
-        local proto_extract_dir="/tmp/0xProto-main"
-        rm -f "$proto_zip"
-        rm -rf "$proto_extract_dir"
-        wget -qO "$proto_zip" "https://github.com/0xType/0xProto/archive/refs/heads/main.zip"
-        unzip -qo "$proto_zip" -d /tmp
-        cp "$proto_extract_dir"/fonts/*.ttf "$local_fonts_dir"/
-        fc-cache -fv "$local_fonts_dir"
-        rm -f "$proto_zip"
-        rm -rf "$proto_extract_dir"
-        ok "0xProto Nerd Font installed"
-    fi
+    install_0xproto_font
 
     ok "Terminal tools installed"
 }
@@ -435,6 +438,7 @@ install_desktop_x11() {
     info "Installing X11 desktop tools..."
 
     sudo apt-get install -y i3 dunst picom rofi feh flameshot wget
+    install_0xproto_font
 
     # betterlockscreen
     if ! command -v betterlockscreen &>/dev/null; then
@@ -446,17 +450,6 @@ install_desktop_x11() {
 
     # polybar
     sudo apt-get install -y polybar 2>/dev/null || warn "polybar not in apt, install manually"
-
-    # i3status-rust (cargo)
-    if [[ -f "$HOME/.cargo/env" ]]; then
-        # shellcheck disable=SC1091
-        source "$HOME/.cargo/env"
-    fi
-    if command -v cargo &>/dev/null; then
-        cargo install i3status-rs 2>/dev/null && ok "i3status-rust" || fail "i3status-rust"
-    else
-        warn "cargo not available — skipping i3status-rust (install Rust category first)"
-    fi
 
     ok "X11 desktop tools installed"
 }
