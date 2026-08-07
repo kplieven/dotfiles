@@ -129,6 +129,94 @@ install_vimix_cursors() {
     fi
 }
 
+detect_vimix_cursor_theme() {
+    local dir theme
+    for dir in "$HOME/.icons" "$HOME/.local/share/icons"; do
+        [[ -d "$dir" ]] || continue
+        theme=$(find "$dir" -maxdepth 1 -mindepth 1 -type d -name 'Vimix-cursors*' -printf '%f\n' | sort | sed -n '1p')
+        if [[ -n "$theme" ]]; then
+            printf '%s\n' "$theme"
+            return 0
+        fi
+    done
+    return 1
+}
+
+install_kitty() {
+    if command -v kitty &>/dev/null; then
+        warn "kitty already installed"
+        return
+    fi
+
+    sudo apt-get install -y curl
+    curl -fsSL https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin launch=n
+    local kitty_bin="$HOME/.local/kitty.app/bin"
+    mkdir -p "$HOME/.local/bin"
+    ln -sf "$kitty_bin/kitty" "$HOME/.local/bin/kitty"
+    ln -sf "$kitty_bin/kitten" "$HOME/.local/bin/kitten"
+    ok "kitty installed"
+}
+
+configure_i3_default_terminal() {
+    local i3_config="$HOME/.config/i3/config"
+    local target='bindsym $mod+Return exec --no-startup-id kitty'
+    if [[ ! -f "$i3_config" ]]; then
+        warn "i3 config not found at $i3_config — skipping kitty terminal config"
+        return
+    fi
+
+    if grep -qF "$target" "$i3_config"; then
+        warn "i3 default terminal already set to kitty"
+        return
+    fi
+
+    if grep -q 'bindsym \$mod+Return exec i3-sensible-terminal' "$i3_config"; then
+        sed -i 's|bindsym \$mod+Return exec i3-sensible-terminal|bindsym $mod+Return exec --no-startup-id kitty|' "$i3_config"
+    else
+        printf '\n%s\n' "$target" >> "$i3_config"
+    fi
+    ok "Configured i3 default terminal to kitty"
+}
+
+configure_i3_vimix_cursors() {
+    local vimix_theme
+    if ! vimix_theme="$(detect_vimix_cursor_theme)"; then
+        warn "Could not find Vimix cursor theme — skipping i3 cursor config"
+        return
+    fi
+
+    local default_theme_dir="$HOME/.icons/default"
+    local default_theme_file="$default_theme_dir/index.theme"
+    mkdir -p "$default_theme_dir"
+    cat > "$default_theme_file" <<EOF
+[Icon Theme]
+Inherits=${vimix_theme}
+EOF
+    ok "Configured i3/X11 cursor theme to ${vimix_theme}"
+}
+
+configure_sway_vimix_cursors() {
+    local vimix_theme
+    if ! vimix_theme="$(detect_vimix_cursor_theme)"; then
+        warn "Could not find Vimix cursor theme — skipping Sway cursor config"
+        return
+    fi
+
+    local sway_config="$HOME/.config/sway/config"
+    local sway_line="seat seat0 xcursor_theme ${vimix_theme} 24"
+    if [[ ! -f "$sway_config" ]]; then
+        warn "Sway config not found at $sway_config — skipping Sway cursor config"
+        return
+    fi
+
+    if grep -q '^seat seat0 xcursor_theme ' "$sway_config"; then
+        sed -i "s|^seat seat0 xcursor_theme .*|${sway_line}|" "$sway_config"
+    else
+        printf '\n%s\n' "$sway_line" >> "$sway_config"
+    fi
+    ok "Configured Sway cursor theme to ${vimix_theme}"
+}
+
 # ---------------------------------------------------------------------------
 # Categories
 # ---------------------------------------------------------------------------
@@ -469,17 +557,7 @@ install_terminal() {
 
     sudo apt-get install -y unzip wget
 
-    # kitty
-    if ! command -v kitty &>/dev/null; then
-        curl -fsSL https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin launch=n
-        local kitty_bin="$HOME/.local/kitty.app/bin"
-        mkdir -p "$HOME/.local/bin"
-        ln -sf "$kitty_bin/kitty" "$HOME/.local/bin/kitty"
-        ln -sf "$kitty_bin/kitten" "$HOME/.local/bin/kitten"
-        ok "kitty installed"
-    else
-        warn "kitty already installed"
-    fi
+    install_kitty
 
     # JetBrains Mono Nerd Font
     local font_dir="$HOME/.local/share/fonts/JetBrainsMonoNerdFont"
@@ -514,6 +592,9 @@ install_desktop_x11() {
     install_0xproto_font
     install_symbols_nerd_font
     install_vimix_cursors
+    install_kitty
+    configure_i3_default_terminal
+    configure_i3_vimix_cursors
 
     # betterlockscreen
     if ! command -v betterlockscreen &>/dev/null; then
@@ -537,6 +618,7 @@ install_desktop_wayland() {
 
     sudo apt-get install -y sway waybar swaylock swaybg wl-clipboard wlogout
     install_vimix_cursors
+    configure_sway_vimix_cursors
 
     # kanshi
     sudo apt-get install -y kanshi 2>/dev/null || warn "kanshi not in apt, install manually"
