@@ -84,6 +84,33 @@ install_0xproto_font() {
     fi
 }
 
+install_symbols_nerd_font() {
+    local font_dir="$HOME/.local/share/fonts/NerdFontsSymbolsOnly"
+    mkdir -p "$font_dir"
+    if compgen -G "$font_dir/*.ttf" > /dev/null; then
+        warn "Symbols Nerd Font already installed"
+    else
+        local nf_version
+        nf_version=$(curl -s "https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest" | grep -Po '"tag_name": *"\K[^"]*')
+        local font_zip="/tmp/NerdFontsSymbolsOnly.zip"
+
+        if [[ -z "$nf_version" ]]; then
+            fail "Could not determine latest nerd-fonts release for Symbols Nerd Font"
+            return
+        fi
+
+        rm -f "$font_zip"
+        rm -rf "$font_dir"
+        mkdir -p "$font_dir"
+        curl -fsSL -o "$font_zip" \
+            "https://github.com/ryanoasis/nerd-fonts/releases/download/${nf_version}/NerdFontsSymbolsOnly.zip"
+        unzip -qo "$font_zip" -d "$font_dir"
+        fc-cache -f "$font_dir"
+        rm -f "$font_zip"
+        ok "Symbols Nerd Font installed (${nf_version})"
+    fi
+}
+
 # ---------------------------------------------------------------------------
 # Categories
 # ---------------------------------------------------------------------------
@@ -448,6 +475,7 @@ install_terminal() {
     fi
 
     install_0xproto_font
+    install_symbols_nerd_font
 
     ok "Terminal tools installed"
 }
@@ -460,6 +488,7 @@ install_desktop_x11() {
 
     sudo apt-get install -y i3 arandr dunst picom rofi feh flameshot wget unzip
     install_0xproto_font
+    install_symbols_nerd_font
 
     # betterlockscreen
     if ! command -v betterlockscreen &>/dev/null; then
