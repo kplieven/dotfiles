@@ -111,6 +111,24 @@ install_symbols_nerd_font() {
     fi
 }
 
+install_vimix_cursors() {
+    local user_icons_dir="$HOME/.local/share/icons"
+    local install_dir="/tmp/Vimix-cursors"
+    if compgen -G "$user_icons_dir/Vimix-cursors*" > /dev/null; then
+        warn "Vimix cursors already installed for user"
+    else
+        if ! command -v git &>/dev/null; then
+            sudo apt-get install -y git
+        fi
+        rm -rf "$install_dir"
+        git clone --depth 1 https://github.com/vinceliuice/Vimix-cursors.git "$install_dir"
+        mkdir -p "$user_icons_dir"
+        (cd "$install_dir" && ./install.sh)
+        rm -rf "$install_dir"
+        ok "Vimix cursors installed for user"
+    fi
+}
+
 # ---------------------------------------------------------------------------
 # Categories
 # ---------------------------------------------------------------------------
@@ -122,8 +140,8 @@ LABELS=(
     "Neovim         — build from source, sync plugins"
     "Git tools      — lazygit"
     "Terminal       — kitty, JetBrains Mono Nerd Font, Symbols Nerd Font"
-    "Desktop (X11)  — i3, arandr, autorandr, betterlockscreen, picom, polybar, dunst, 0xProto Nerd Font, Symbols Nerd Font"
-    "Desktop (Sway) — sway, waybar, kanshi"
+    "Desktop (X11)  — i3, arandr, autorandr, betterlockscreen, picom, polybar, dunst, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
+    "Desktop (Sway) — sway, waybar, kanshi, Vimix cursors"
 )
 
 declare -A SELECTED
@@ -147,8 +165,8 @@ usage() {
     echo "  --nvim             Neovim (built from source)"
     echo "  --git              Lazygit"
     echo "  --terminal         Kitty terminal, JetBrains Mono Nerd Font, Symbols Nerd Font"
-    echo "  --desktop-x11      i3, arandr, autorandr, betterlockscreen, polybar, dunst, 0xProto Nerd Font, Symbols Nerd Font"
-    echo "  --desktop-wayland  Sway, waybar, kanshi"
+    echo "  --desktop-x11      i3, arandr, autorandr, betterlockscreen, polybar, dunst, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
+    echo "  --desktop-wayland  Sway, waybar, kanshi, Vimix cursors"
     echo "  --help             Show this help message"
     echo ""
     echo "If no flags are given, an interactive menu is displayed."
@@ -489,6 +507,7 @@ install_desktop_x11() {
     sudo apt-get install -y i3 arandr autorandr dunst picom rofi feh flameshot wget unzip
     install_0xproto_font
     install_symbols_nerd_font
+    install_vimix_cursors
 
     # betterlockscreen
     if ! command -v betterlockscreen &>/dev/null; then
@@ -511,6 +530,7 @@ install_desktop_wayland() {
     info "Installing Wayland desktop tools..."
 
     sudo apt-get install -y sway waybar swaylock swaybg wl-clipboard wlogout
+    install_vimix_cursors
 
     # kanshi
     sudo apt-get install -y kanshi 2>/dev/null || warn "kanshi not in apt, install manually"
