@@ -58,22 +58,29 @@ confirm() {
 }
 
 install_0xproto_font() {
-    local local_fonts_dir="$HOME/.local/share/fonts"
-    mkdir -p "$local_fonts_dir"
-    if compgen -G "$local_fonts_dir/0xProto*.ttf" > /dev/null; then
+    local font_dir="$HOME/.local/share/fonts/0xProtoNerdFont"
+    mkdir -p "$font_dir"
+    if compgen -G "$font_dir/0xProtoNerdFont*.ttf" > /dev/null; then
         warn "0xProto Nerd Font already installed"
     else
-        local proto_zip="/tmp/0xProto-main.zip"
-        local proto_extract_dir="/tmp/0xProto-main"
-        rm -f "$proto_zip"
-        rm -rf "$proto_extract_dir"
-        wget -qO "$proto_zip" "https://github.com/0xType/0xProto/archive/refs/heads/main.zip"
-        unzip -qo "$proto_zip" -d /tmp
-        cp "$proto_extract_dir"/fonts/*.ttf "$local_fonts_dir"/
-        fc-cache -fv "$local_fonts_dir"
-        rm -f "$proto_zip"
-        rm -rf "$proto_extract_dir"
-        ok "0xProto Nerd Font installed"
+        local nf_version
+        nf_version=$(curl -s "https://api.github.com/repos/ryanoasis/nerd-fonts/releases/latest" | grep -Po '"tag_name": *"\K[^"]*')
+        local font_zip="/tmp/0xProto.zip"
+
+        if [[ -z "$nf_version" ]]; then
+            fail "Could not determine latest nerd-fonts release for 0xProto"
+            return
+        fi
+
+        rm -f "$font_zip"
+        rm -rf "$font_dir"
+        mkdir -p "$font_dir"
+        curl -fsSL -o "$font_zip" \
+            "https://github.com/ryanoasis/nerd-fonts/releases/download/${nf_version}/0xProto.zip"
+        unzip -qo "$font_zip" -d "$font_dir"
+        fc-cache -f "$font_dir"
+        rm -f "$font_zip"
+        ok "0xProto Nerd Font installed (${nf_version})"
     fi
 }
 
