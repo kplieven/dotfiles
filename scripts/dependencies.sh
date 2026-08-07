@@ -325,7 +325,13 @@ install_rust() {
     info "Installing cargo CLI tools (this may take a while)..."
     local tools=(eza ripgrep bat fd-find du-dust starship bottom rm-improved tree-sitter-cli)
     for tool in "${tools[@]}"; do
-        cargo install "$tool" 2>/dev/null && ok "$tool" || fail "$tool"
+        if cargo install --locked "$tool" 2>/dev/null; then
+            ok "$tool (locked)"
+        elif cargo install "$tool" 2>/dev/null; then
+            warn "$tool installed without --locked fallback"
+        else
+            fail "$tool"
+        fi
     done
 
     ok "Rust toolchain installed"
