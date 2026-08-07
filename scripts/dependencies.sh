@@ -129,10 +129,59 @@ install_vimix_cursors() {
     fi
 }
 
+install_graphite_gtk_theme() {
+    local theme_dir="$HOME/.themes/Graphite-Dark"
+    local install_dir="/tmp/Graphite-gtk-theme"
+    if [[ -d "$theme_dir" ]]; then
+        warn "Graphite GTK theme already installed"
+    else
+        rm -rf "$install_dir"
+        git clone --depth 1 https://github.com/vinceliuice/Graphite-gtk-theme.git "$install_dir"
+        (cd "$install_dir" && ./install.sh --color dark)
+        rm -rf "$install_dir"
+        ok "Graphite GTK theme installed"
+    fi
+}
+
+install_tela_icon_theme() {
+    local theme_dir="$HOME/.local/share/icons/Tela-Dark"
+    local install_dir="/tmp/Tela-icon-theme"
+    if [[ -d "$theme_dir" ]]; then
+        warn "Tela icon theme already installed"
+    else
+        rm -rf "$install_dir"
+        git clone --depth 1 https://github.com/vinceliuice/Tela-icon-theme.git "$install_dir"
+        (cd "$install_dir" && ./install.sh)
+        rm -rf "$install_dir"
+        ok "Tela icon theme installed"
+    fi
+}
+
+install_rofi_theme() {
+    local theme_dir="$HOME/.local/share/rofi/themes"
+    local install_dir="/tmp/rofi-themes-collection"
+    if [[ -f "$theme_dir/rounded-nord-dark.rasi" && -f "$theme_dir/template/rounded-template.rasi" ]]; then
+        warn "Rounded Nord Rofi theme already installed"
+    else
+        rm -rf "$install_dir"
+        git clone --depth 1 https://github.com/newmanls/rofi-themes-collection.git "$install_dir"
+        mkdir -p "$theme_dir"
+        mkdir -p "$theme_dir/template"
+        install -m 644 "$install_dir/themes/rounded-nord-dark.rasi" "$theme_dir/"
+        install -m 644 "$install_dir/themes/template/rounded-template.rasi" "$theme_dir/template/"
+        rm -rf "$install_dir"
+        ok "Rounded Nord Rofi theme installed"
+    fi
+}
+
 detect_vimix_cursor_theme() {
     local dir theme
     for dir in "$HOME/.icons" "$HOME/.local/share/icons"; do
         [[ -d "$dir" ]] || continue
+        if [[ -d "$dir/Vimix-white-cursors" ]]; then
+            printf '%s\n' "Vimix-white-cursors"
+            return 0
+        fi
         theme=$(find "$dir" -maxdepth 1 -mindepth 1 -type d -name 'Vimix-cursors*' -printf '%f\n' | sort | sed -n '1p')
         if [[ -n "$theme" ]]; then
             printf '%s\n' "$theme"
@@ -589,9 +638,13 @@ install_desktop_x11() {
     info "Installing X11 desktop tools..."
 
     sudo apt-get install -y i3 arandr autorandr dunst picom rofi feh flameshot wget unzip
+    sudo apt-get install -y sassc
     install_0xproto_font
     install_symbols_nerd_font
     install_vimix_cursors
+    install_graphite_gtk_theme
+    install_tela_icon_theme
+    install_rofi_theme
     install_kitty
     configure_i3_default_terminal
     configure_i3_vimix_cursors
@@ -616,8 +669,10 @@ install_desktop_x11() {
 install_desktop_wayland() {
     info "Installing Wayland desktop tools..."
 
-    sudo apt-get install -y sway waybar swaylock swaybg wl-clipboard wlogout
+    sudo apt-get install -y sway waybar swaylock swaybg wl-clipboard wlogout sassc
     install_vimix_cursors
+    install_graphite_gtk_theme
+    install_tela_icon_theme
     configure_sway_vimix_cursors
 
     # kanshi
