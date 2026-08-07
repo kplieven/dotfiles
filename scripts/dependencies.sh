@@ -121,8 +121,8 @@ LABELS=(
     "Rust toolchain — rustup, eza, ripgrep, bat, fd, dust, starship, bottom, rm-improved"
     "Neovim         — build from source, sync plugins"
     "Git tools      — lazygit"
-    "Terminal       — kitty, JetBrains Mono Nerd Font"
-    "Desktop (X11)  — i3, arandr, betterlockscreen, picom, polybar, dunst, 0xProto Nerd Font"
+    "Terminal       — kitty, JetBrains Mono Nerd Font, Symbols Nerd Font"
+    "Desktop (X11)  — i3, arandr, autorandr, betterlockscreen, picom, polybar, dunst, 0xProto Nerd Font, Symbols Nerd Font"
     "Desktop (Sway) — sway, waybar, kanshi"
 )
 
@@ -146,8 +146,8 @@ usage() {
     echo "  --rust             Rust toolchain and cargo CLI tools"
     echo "  --nvim             Neovim (built from source)"
     echo "  --git              Lazygit"
-    echo "  --terminal         Kitty terminal, JetBrains Mono Nerd Font"
-    echo "  --desktop-x11      i3, arandr, betterlockscreen, polybar, dunst, 0xProto Nerd Font"
+    echo "  --terminal         Kitty terminal, JetBrains Mono Nerd Font, Symbols Nerd Font"
+    echo "  --desktop-x11      i3, arandr, autorandr, betterlockscreen, polybar, dunst, 0xProto Nerd Font, Symbols Nerd Font"
     echo "  --desktop-wayland  Sway, waybar, kanshi"
     echo "  --help             Show this help message"
     echo ""
@@ -486,7 +486,7 @@ install_terminal() {
 install_desktop_x11() {
     info "Installing X11 desktop tools..."
 
-    sudo apt-get install -y i3 arandr dunst picom rofi feh flameshot wget unzip
+    sudo apt-get install -y i3 arandr autorandr dunst picom rofi feh flameshot wget unzip
     install_0xproto_font
     install_symbols_nerd_font
 
