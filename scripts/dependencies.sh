@@ -337,7 +337,15 @@ install_rust() {
 install_nvim() {
     info "Installing Neovim from source..."
 
-    local default_version="v0.12.1"
+    local fallback_version="v0.12.4"
+    local latest_version=""
+    if latest_version=$(curl -fsSL "https://api.github.com/repos/neovim/neovim/releases/latest" | grep -Po '"tag_name": *"\K[^"]*'); then
+        :
+    else
+        warn "Could not fetch latest Neovim release tag, falling back to $fallback_version"
+    fi
+
+    local default_version="${latest_version:-$fallback_version}"
     local nvim_version
     nvim_version=$(prompt "Neovim version to build" "$default_version")
 
