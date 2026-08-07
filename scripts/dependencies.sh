@@ -95,7 +95,7 @@ LABELS=(
     "Neovim         — build from source, sync plugins"
     "Git tools      — lazygit"
     "Terminal       — kitty, JetBrains Mono Nerd Font"
-    "Desktop (X11)  — i3, betterlockscreen, picom, polybar, dunst, 0xProto Nerd Font"
+    "Desktop (X11)  — i3, arandr, betterlockscreen, picom, polybar, dunst, 0xProto Nerd Font"
     "Desktop (Sway) — sway, waybar, kanshi"
 )
 
@@ -120,7 +120,7 @@ usage() {
     echo "  --nvim             Neovim (built from source)"
     echo "  --git              Lazygit"
     echo "  --terminal         Kitty terminal, JetBrains Mono Nerd Font"
-    echo "  --desktop-x11      i3, betterlockscreen, polybar, dunst, 0xProto Nerd Font"
+    echo "  --desktop-x11      i3, arandr, betterlockscreen, polybar, dunst, 0xProto Nerd Font"
     echo "  --desktop-wayland  Sway, waybar, kanshi"
     echo "  --help             Show this help message"
     echo ""
@@ -458,7 +458,7 @@ install_terminal() {
 install_desktop_x11() {
     info "Installing X11 desktop tools..."
 
-    sudo apt-get install -y i3 dunst picom rofi feh flameshot wget
+    sudo apt-get install -y i3 arandr dunst picom rofi feh flameshot wget unzip
     install_0xproto_font
 
     # betterlockscreen
