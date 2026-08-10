@@ -219,27 +219,6 @@ install_kitty() {
     ok "kitty installed"
 }
 
-configure_i3_default_terminal() {
-    local i3_config="$HOME/.config/i3/config"
-    local target='bindsym $mod+Return exec --no-startup-id kitty'
-    if [[ ! -f "$i3_config" ]]; then
-        warn "i3 config not found at $i3_config — skipping kitty terminal config"
-        return
-    fi
-
-    if grep -qF "$target" "$i3_config"; then
-        warn "i3 default terminal already set to kitty"
-        return
-    fi
-
-    if grep -q 'bindsym \$mod+Return exec i3-sensible-terminal' "$i3_config"; then
-        sed -i 's|bindsym \$mod+Return exec i3-sensible-terminal|bindsym $mod+Return exec --no-startup-id kitty|' "$i3_config"
-    else
-        printf '\n%s\n' "$target" >> "$i3_config"
-    fi
-    ok "Configured i3 default terminal to kitty"
-}
-
 link_i3_bin_scripts() {
     local i3_bin_dir="$HOME/.config/i3/bin"
     if [[ ! -d "$i3_bin_dir" ]]; then
@@ -675,7 +654,6 @@ install_desktop_x11() {
     install_tela_icon_theme
     install_rofi_theme
     install_kitty
-    configure_i3_default_terminal
     configure_i3_vimix_cursors
     link_i3_bin_scripts
 
