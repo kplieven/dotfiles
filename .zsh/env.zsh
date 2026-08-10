@@ -1,5 +1,3 @@
-LLVM_DIR=$HOME/Repositories/llvm-project/
-
 export GTEST_COLOR=yes
 
 export PATH="$HOME/.local/bin:$PATH"
