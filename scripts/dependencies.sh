@@ -285,7 +285,7 @@ LABELS=(
     "Neovim         — build from source, sync plugins"
     "Git tools      — lazygit"
     "Terminal       — kitty, JetBrains Mono Nerd Font, Symbols Nerd Font"
-    "Desktop (X11)  — i3, arandr, autorandr, betterlockscreen, picom, polybar, dunst, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
+    "Desktop (X11)  — i3, arandr, autorandr, betterlockscreen, picom, polybar, dunst, playerctl, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
     "Desktop (Sway) — sway, waybar, kanshi, Vimix cursors"
 )
 
@@ -310,7 +310,7 @@ usage() {
     echo "  --nvim             Neovim (built from source)"
     echo "  --git              Lazygit"
     echo "  --terminal         Kitty terminal, JetBrains Mono Nerd Font, Symbols Nerd Font"
-    echo "  --desktop-x11      i3, arandr, autorandr, betterlockscreen, polybar, dunst, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
+    echo "  --desktop-x11      i3, arandr, autorandr, betterlockscreen, polybar, dunst, playerctl, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
     echo "  --desktop-wayland  Sway, waybar, kanshi, Vimix cursors"
     echo "  --help             Show this help message"
     echo ""
@@ -645,7 +645,7 @@ install_terminal() {
 install_desktop_x11() {
     info "Installing X11 desktop tools..."
 
-    sudo apt-get install -y i3 arandr autorandr dunst picom rofi feh flameshot wget unzip
+    sudo apt-get install -y i3 arandr autorandr dunst picom rofi feh flameshot playerctl wget unzip git build-essential cmake pkg-config libxcb1-dev libxcb-xkb-dev libxcb-image0-dev libxcb-util0-dev libxcb-xinerama0-dev libxcb-randr0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev libxkbfile-dev libpam0g-dev libev-dev libcurl4-openssl-dev libjpeg-dev libpng-dev libxcb-cursor-dev
     sudo apt-get install -y sassc
     install_0xproto_font
     install_symbols_nerd_font
@@ -657,7 +657,20 @@ install_desktop_x11() {
     configure_i3_vimix_cursors
     link_i3_bin_scripts
 
-    # betterlockscreen
+    # i3lock-color / betterlockscreen
+    if ! command -v i3lock-color &>/dev/null; then
+        local i3lock_color_dir="/tmp/i3lock-color"
+        rm -rf "$i3lock_color_dir"
+        git clone --depth 1 https://github.com/Raymo111/i3lock-color.git "$i3lock_color_dir"
+        pushd "$i3lock_color_dir" >/dev/null
+        ./install-i3lock-color.sh
+        popd >/dev/null
+        rm -rf "$i3lock_color_dir"
+        ok "i3lock-color installed from source"
+    else
+        warn "i3lock-color already installed"
+    fi
+
     if ! command -v betterlockscreen &>/dev/null; then
         wget https://raw.githubusercontent.com/betterlockscreen/betterlockscreen/main/install.sh -O - -q | bash -s user
         ok "betterlockscreen installed"
