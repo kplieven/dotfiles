@@ -16,7 +16,7 @@ fi
 
 which bat > /dev/null 2>&1
 if [ $? -eq 0 ]; then
-  alias cat='bat --style=plain --paging=never'
+  alias cat='bat'
 fi
 
 which rg > /dev/null 2>&1
