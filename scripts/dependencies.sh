@@ -678,7 +678,7 @@ install_terminal() {
 install_desktop_x11() {
     info "Installing X11 desktop tools..."
 
-    sudo apt-get install -y i3 arandr autorandr dunst picom rofi feh flameshot playerctl wget unzip git build-essential cmake pkg-config libxcb1-dev libxcb-xkb-dev libxcb-image0-dev libxcb-util0-dev libxcb-xinerama0-dev libxcb-randr0-dev libxcb-xkb-dev libxkbcommon-dev libxkbcommon-x11-dev libxkbfile-dev libpam0g-dev libev-dev libcurl4-openssl-dev libjpeg-dev libpng-dev libxcb-cursor-dev
+    sudo apt-get install -y i3 arandr autoconf autorandr dunst picom rofi feh flameshot playerctl wget unzip git build-essential cmake pkg-config libxcb1-dev libxcb-xkb-dev libxcb-image0-dev libxcb-util-dev libxcb-util0-dev libxcb-xinerama0-dev libxcb-randr0-dev libxcb-composite0-dev libxcb-xrm-dev libxkbcommon-dev libxkbcommon-x11-dev libxkbfile-dev libpam0g-dev libev-dev libcurl4-openssl-dev libjpeg-dev libpng-dev libgif-dev libcairo2-dev libfontconfig1-dev libx11-xcb-dev libxcb-cursor-dev
     sudo apt-get install -y sassc
     install_0xproto_font
     install_symbols_nerd_font
