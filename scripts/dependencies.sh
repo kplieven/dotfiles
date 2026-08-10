@@ -281,7 +281,7 @@ CATEGORIES=(shell build-tools rust nvim git terminal docker desktop-x11 desktop-
 LABELS=(
     "Shell          — zsh, antigen, set as default shell"
     "Build tools    — C/C++ compiler toolchain and build/debug utilities"
-    "Rust toolchain — rustup, eza, ripgrep, bat, fd, dust, starship, bottom, rm-improved"
+    "Rust toolchain — rustup, eza, ripgrep, bat, fd, dust, starship, bottom, rm-improved, bluetui, impala"
     "Neovim         — build from source, sync plugins"
     "Git tools      — lazygit"
     "Terminal       — kitty, JetBrains Mono Nerd Font, Symbols Nerd Font"
@@ -540,7 +540,7 @@ install_rust() {
     info "Installing Rust toolchain..."
 
     # Common native deps needed by many Rust crates
-    sudo apt-get install -y build-essential pkg-config cmake
+    sudo apt-get install -y build-essential pkg-config cmake libdbus-1-dev
 
     if ! command -v rustup &>/dev/null; then
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y --no-modify-path
@@ -553,7 +553,7 @@ install_rust() {
     [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
     info "Installing cargo CLI tools (this may take a while)..."
-    local tools=(eza ripgrep bat fd-find du-dust starship bottom rm-improved tree-sitter-cli)
+    local tools=(eza ripgrep bat fd-find du-dust starship bottom rm-improved tree-sitter-cli bluetui impala)
     local failed_tools=0
     for tool in "${tools[@]}"; do
         if cargo install --locked "$tool" 2>/dev/null; then
