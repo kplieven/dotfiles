@@ -1,0 +1,27 @@
+{
+    "allowedUrls": [
+        "http://localhost:5200"
+    ],
+    "showReasoning": true,
+    "enabledPlugins": {
+        "superpowers@superpowers-marketplace": true,
+        "obsidian@obsidian-skills": true
+    },
+    "extraKnownMarketplaces": {
+        "superpowers-marketplace": {
+            "source": {
+                "source": "github",
+                "repo": "obra/superpowers-marketplace"
+            }
+        }
+    },
+    "theme": "default",
+    "notifications": false,
+    "footer": {
+        "showDirectory": true,
+        "showBranch": true,
+        "showContextWindow": true,
+        "showQuota": true,
+        "showAiUsed": false
+    }
+}
