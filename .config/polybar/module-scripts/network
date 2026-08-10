@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mode="${1:-wifi}"
+
+is_wireless_iface() {
+    local iface="$1"
+    [[ -d "/sys/class/net/${iface}/wireless" ]]
+}
+
+is_iface_connected() {
+    local iface="$1"
+    [[ -r "/sys/class/net/${iface}/operstate" ]] || return 1
+    [[ "$(cat "/sys/class/net/${iface}/operstate")" == "up" ]] || return 1
+
+    if [[ -r "/sys/class/net/${iface}/carrier" ]]; then
+        [[ "$(cat "/sys/class/net/${iface}/carrier")" == "1" ]] || return 1
+    fi
+}
+
+first_connected_ethernet_iface() {
+    local path iface
+    for path in /sys/class/net/*; do
+        iface="${path##*/}"
+        [[ "$iface" == "lo" ]] && continue
+        is_wireless_iface "$iface" && continue
+        is_iface_connected "$iface" || continue
+        echo "$iface"
+        return 0
+    done
+    return 1
+}
+
+first_wireless_iface() {
+    local path iface
+    for path in /sys/class/net/*; do
+        iface="${path##*/}"
+        is_wireless_iface "$iface" || continue
+        echo "$iface"
+        return 0
+    done
+    return 1
+}
+
+ipv4_for_iface() {
+    local iface="$1"
+    ip -o -4 addr show dev "$iface" 2>/dev/null | awk '{print $4}' | cut -d/ -f1 | head -n1
+}
+
+wifi_ssid() {
+    local iface="$1"
+    if command -v iwgetid >/dev/null 2>&1; then
+        iwgetid "$iface" --raw 2>/dev/null || true
+        return 0
+    fi
+    echo ""
+}
+
+show_ethernet() {
+    local eth_iface eth_ip
+
+    if ! eth_iface="$(first_connected_ethernet_iface)"; then
+        exit 0
+    fi
+
+    eth_ip="$(ipv4_for_iface "$eth_iface")"
+    if [[ -n "${eth_ip:-}" ]]; then
+        echo "${eth_iface} ${eth_ip}"
+    else
+        echo "${eth_iface}"
+    fi
+}
+
+show_wifi() {
+    local wlan_iface ssid
+
+    if first_connected_ethernet_iface >/dev/null; then
+        exit 0
+    fi
+
+    if ! wlan_iface="$(first_wireless_iface)"; then
+        echo "no wifi"
+        exit 0
+    fi
+
+    ssid="$(wifi_ssid "$wlan_iface")"
+    if [[ -n "${ssid:-}" ]]; then
+        echo "${ssid}"
+    else
+        echo "no wifi"
+    fi
+}
+
+case "$mode" in
+    ethernet) show_ethernet ;;
+    wifi) show_wifi ;;
+    *) exit 1 ;;
+esac

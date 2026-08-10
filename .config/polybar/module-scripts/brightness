@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+lid_is_closed() {
+    local state
+    for state in /proc/acpi/button/lid/*/state; do
+        [[ -e "$state" ]] || continue
+        if grep -qi "closed" "$state"; then
+            return 0
+        fi
+    done
+
+    local status
+    for status in /sys/class/drm/*eDP*/status; do
+        [[ -e "$status" ]] || continue
+        if grep -qi "disconnected" "$status"; then
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+main() {
+    local card="intel_backlight"
+    local base="/sys/class/backlight/${card}"
+    local actual max pct
+
+    lid_is_closed && exit 0
+    [[ -r "${base}/actual_brightness" && -r "${base}/max_brightness" ]] || exit 0
+
+    actual="$(<"${base}/actual_brightness")"
+    max="$(<"${base}/max_brightness")"
+    (( max > 0 )) || exit 0
+
+    pct=$(( actual * 100 / max ))
+    echo "${pct}%"
+}
+
+main
