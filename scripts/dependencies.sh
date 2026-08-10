@@ -227,6 +227,22 @@ configure_i3_default_terminal() {
     ok "Configured i3 default terminal to kitty"
 }
 
+link_i3_bin_scripts() {
+    local i3_bin_dir="$HOME/.config/i3/bin"
+    if [[ ! -d "$i3_bin_dir" ]]; then
+        warn "i3 bin dir not found at $i3_bin_dir — skipping symlinks"
+        return
+    fi
+
+    mkdir -p "$HOME/.local/bin"
+    local script
+    for script in "$i3_bin_dir"/*; do
+        [[ -f "$script" ]] || continue
+        ln -sf "$script" "$HOME/.local/bin/$(basename "$script")"
+    done
+    ok "Symlinked i3 bin scripts into ~/.local/bin"
+}
+
 configure_i3_vimix_cursors() {
     local vimix_theme
     if ! vimix_theme="$(detect_vimix_cursor_theme)"; then
@@ -648,6 +664,7 @@ install_desktop_x11() {
     install_kitty
     configure_i3_default_terminal
     configure_i3_vimix_cursors
+    link_i3_bin_scripts
 
     # betterlockscreen
     if ! command -v betterlockscreen &>/dev/null; then
