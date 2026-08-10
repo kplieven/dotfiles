@@ -11,7 +11,7 @@ if [ -d "$FNM_PATH" ]; then
   eval "`fnm env`"
 fi
 
-export CDPATH=.:$HOME/Repositories/Barco
+export CDPATH=.:$HOME/repos/barco-labs/
 
 source $HOME/.cargo/env
 
@@ -24,4 +24,3 @@ fi
 # VSCode shell integration
 [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 
-# source "/etc/profile.d/rvm.sh"
