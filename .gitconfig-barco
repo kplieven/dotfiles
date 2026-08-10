@@ -3,3 +3,7 @@
     email = karel.lievens@barco.com
     name = Lievens, Karel
     signingkey = ~/.ssh/github-work.pub
+[url "git@github-work:"]
+    insteadOf = git@github.com:
+[url "ssh://git@github-work/"]
+    insteadOf = ssh://git@github.com/
