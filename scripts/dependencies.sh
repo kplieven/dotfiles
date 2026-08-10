@@ -277,7 +277,7 @@ configure_sway_vimix_cursors() {
 # ---------------------------------------------------------------------------
 # Categories
 # ---------------------------------------------------------------------------
-CATEGORIES=(shell build-tools rust nvim git terminal desktop-x11 desktop-wayland)
+CATEGORIES=(shell build-tools rust nvim git terminal docker desktop-x11 desktop-wayland)
 LABELS=(
     "Shell          — zsh, antigen, set as default shell"
     "Build tools    — C/C++ compiler toolchain and build/debug utilities"
@@ -285,6 +285,7 @@ LABELS=(
     "Neovim         — build from source, sync plugins"
     "Git tools      — lazygit"
     "Terminal       — kitty, JetBrains Mono Nerd Font, Symbols Nerd Font"
+    "Docker         — Docker Engine and Compose plugin"
     "Desktop (X11)  — i3, arandr, autorandr, betterlockscreen, picom, polybar, dunst, playerctl, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
     "Desktop (Sway) — sway, waybar, kanshi, Vimix cursors"
 )
@@ -310,6 +311,7 @@ usage() {
     echo "  --nvim             Neovim (built from source)"
     echo "  --git              Lazygit"
     echo "  --terminal         Kitty terminal, JetBrains Mono Nerd Font, Symbols Nerd Font"
+    echo "  --docker           Docker Engine and Compose plugin"
     echo "  --desktop-x11      i3, arandr, autorandr, betterlockscreen, polybar, dunst, playerctl, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
     echo "  --desktop-wayland  Sway, waybar, kanshi, Vimix cursors"
     echo "  --help             Show this help message"
@@ -327,7 +329,7 @@ if [[ $# -gt 0 ]]; then
             --all)
                 for cat in "${CATEGORIES[@]}"; do SELECTED[$cat]=1; done
                 ;;
-            --shell|--build-tools|--rust|--nvim|--git|--terminal|--desktop-x11|--desktop-wayland)
+            --shell|--build-tools|--rust|--nvim|--git|--terminal|--docker|--desktop-x11|--desktop-wayland)
                 SELECTED[${1#--}]=1
                 ;;
             --help)
@@ -498,6 +500,37 @@ install_build_tools() {
     sudo apt-get install -y "linux-headers-$(uname -r)" 2>/dev/null || warn "Kernel headers for current kernel not available in apt"
 
     ok "Build tools installed"
+}
+
+# ---------------------------------------------------------------------------
+# Category: Docker
+# ---------------------------------------------------------------------------
+install_docker() {
+    info "Installing Docker..."
+
+    sudo apt-get update
+    sudo apt-get install -y ca-certificates curl gnupg
+    sudo install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+    sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+    . /etc/os-release
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      ${VERSION_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/docker.list >/dev/null
+
+    sudo apt-get update
+    sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+    local docker_user="${SUDO_USER:-$USER}"
+    if id -nG "$docker_user" | grep -qw docker; then
+        warn "$docker_user is already in the docker group"
+    else
+        sudo usermod -aG docker "$docker_user"
+        warn "Added $docker_user to the docker group; re-login is required"
+    fi
+
+    ok "Docker installed"
 }
 
 # ---------------------------------------------------------------------------
@@ -733,8 +766,9 @@ INSTALL_FNS=(
     [3]=install_nvim
     [4]=install_git
     [5]=install_terminal
-    [6]=install_desktop_x11
-    [7]=install_desktop_wayland
+    [6]=install_docker
+    [7]=install_desktop_x11
+    [8]=install_desktop_wayland
 )
 
 echo ""
