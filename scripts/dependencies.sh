@@ -665,6 +665,27 @@ install_desktop_x11() {
         warn "betterlockscreen already installed"
     fi
 
+    local betterlockscreen_wallpaper="$HOME/Pictures/wallpapers/1.jpg"
+    local betterlockscreen_tmp=""
+    if [[ ! -f "$betterlockscreen_wallpaper" ]]; then
+        betterlockscreen_tmp="$(mktemp -d)"
+        betterlockscreen_wallpaper="$betterlockscreen_tmp/1.jpg"
+        if ! curl -fsSL \
+            "https://raw.githubusercontent.com/kplieven/dotfiles/main/Pictures/wallpapers/1.jpg" \
+            -o "$betterlockscreen_wallpaper"; then
+            warn "Skipping betterlockscreen wallpaper generation (could not download tracked 1.jpg)"
+            rm -rf "$betterlockscreen_tmp"
+            betterlockscreen_tmp=""
+        fi
+    fi
+    if [[ -z "${DISPLAY:-}" ]]; then
+        warn "Skipping betterlockscreen wallpaper generation (DISPLAY is not set)"
+    elif [[ -f "$betterlockscreen_wallpaper" ]]; then
+        betterlockscreen -u "$betterlockscreen_wallpaper" --fx dimblur --dim 20 --blur 1.0
+        ok "betterlockscreen dimblur cache generated from 1.jpg"
+    fi
+    [[ -n "$betterlockscreen_tmp" ]] && rm -rf "$betterlockscreen_tmp"
+
     # polybar
     sudo apt-get install -y polybar 2>/dev/null || warn "polybar not in apt, install manually"
 

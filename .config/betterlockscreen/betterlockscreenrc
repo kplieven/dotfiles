@@ -1,0 +1,82 @@
+# betterlockscreen configuration
+# Colors match i3 theme: focused blue #5294e2, dark bg #212121
+
+# --- Effects ---
+# Blur the background when locking
+fx_list=(dimblur)
+lockstyle="dimblur"
+blur_level=1.0
+dim_level=40
+
+# --- Time ---
+time_format="%H:%M"
+font="0xProto Nerd Font"
+timecolor="ffffffff"
+
+# --- Date ---
+date_format="%A, %d %B"
+date_font="0xProto Nerd Font"
+date_size=24
+date_color="d9d9d9ff"
+
+# --- Login box (ring) ---
+# Ring: blue accent, inner dark
+ringcolor="5294e2ff"
+ringvercolor="5294e2ff"
+ringwrongcolor="ff6161ff"
+
+insidecolor="21212100"
+insidevercolor="21212100"
+insidewrongcolor="21212100"
+
+# Key highlight on the ring
+keyhlcolor="9ece6aff"
+bshlcolor="ff6161ff"
+
+# Separator
+separatorcolor="00000000"
+
+# --- Text indicators ---
+verifcolor="ffffffff"
+wrongcolor="ff6161ff"
+layoutcolor="d9d9d9aa"
+modifcolor="d9d9d9aa"
+
+veriftext="verifying..."
+wrongtext="wrong password"
+
+locktext="locked"
+
+# --- Greeter ---
+# Show a small greeting above the clock
+greetercolor="5294e2ff"
+
+# --- Indicator position ---
+# Center login box on display
+loginbox=00000022
+loginshadow=00000000
+loginradius=5
+
+# i3lock-color flags appended after betterlockscreen defaults
+lockargs=(
+    --bar-indicator
+    --bar-pos="x+w/2-160:y+h/2+60"
+    --bar-total-width=340
+    --bar-base-width=4
+    --bar-max-height=4
+    --bar-color=5294e2ff
+    --time-pos="x+w/2+10:y+h/2+0"
+    --time-align=0
+    --greeter-pos="x+w/2+10:y+h/2+26"
+    --greeter-align=0
+    --verif-pos="x+w/2:y+h/2+84"
+    --verif-align=0
+    --wrong-pos="x+w/2:y+h/2+84"
+    --wrong-align=0
+    --modif-pos="x+w/2:y+h/2+84"
+    --modif-align=0
+)
+
+# --- Misc ---
+# Turn off display after 30 seconds of inactivity
+display_on=0
