@@ -127,6 +127,19 @@ install_vimix_cursors() {
         rm -rf "$install_dir"
         ok "Vimix cursors installed for user"
     fi
+
+    # The upstream installer places themes in ~/.local/share/icons, but
+    # libXcursor's default search path (no XCURSOR_PATH set) only checks
+    # ~/.icons, /usr/share/icons and /usr/share/pixmaps — not the XDG data
+    # dir. Without this symlink the theme is silently never found and
+    # cursors fall back to the plain X core cursor.
+    mkdir -p "$HOME/.icons"
+    local theme_dir
+    for theme_dir in "$user_icons_dir"/Vimix-cursors "$user_icons_dir"/Vimix-white-cursors; do
+        [[ -d "$theme_dir" ]] || continue
+        ln -sfn "$theme_dir" "$HOME/.icons/$(basename "$theme_dir")"
+    done
+    ok "Linked Vimix cursor themes into ~/.icons (libXcursor search path)"
 }
 
 install_graphite_gtk_theme() {
