@@ -1,5 +1,5 @@
-; Work identity. Included by ~/.gitconfig only for repos under ~/Repositories/Barco/.
+; Work identity. Included by ~/.gitconfig only for repos under ~/repos/barco-labs/.
 [user]
     email = karel.lievens@barco.com
     name = Lievens, Karel
-    signingkey = ~/.ssh/id_ed25519_gh_2025.pub
+    signingkey = ~/.ssh/github-work.pub
