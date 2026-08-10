@@ -45,5 +45,5 @@
     helper = store
 ; Work identity, scoped to the Barco tree. Must stay AFTER [user] above:
 ; later values win, so this overrides the personal default only in there.
-[includeIf "gitdir:~/Repositories/Barco/"]
+[includeIf "gitdir:~/repos/barco-labs/"]
     path = ~/.gitconfig-barco
