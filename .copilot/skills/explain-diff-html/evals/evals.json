@@ -1,0 +1,45 @@
+{
+  "skill_name": "explain-diff-html",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Can you explain what changed in commit 5f122f9 in this repo? I want to actually understand the new workflow-intake.py script and how it replaced the old select-skills.py, and then quiz me on it in the chat.",
+      "expected_output": "A conversational walkthrough (background/intuition/code) of the workflow-intake.py refactor, followed by a live 5-question multiple-choice quiz asked one question at a time in chat, with immediate feedback per answer.",
+      "files": [],
+      "assertions": [
+        "Response accurately identifies that workflow-intake.py replaced select-skills.py and describes the consolidation of Step 0 questions into a single interactive run (verifiable against git show 5f122f9)",
+        "Response includes a background/intuition explanation before diving into code, not just a file-by-file diff dump",
+        "Response presents exactly one quiz question and stops, waiting for the reader's answer, rather than listing all 5 questions and answers at once",
+        "The quiz question asked is about behavior/trade-offs/causality of the change, not a trivial fact copyable from a single line of the diff",
+        "Response does not fabricate a user answer and continue through multiple questions unprompted"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm ramping up on this repo and got asked to review commit 24a85af (the jira-cli tool detection change). Can you make me one of those explainer pages with a quiz at the end so I can go through it on my own?",
+      "expected_output": "A self-contained HTML file saved to /tmp with background/intuition/code sections explaining the atlassian-mcp-server vs jira-cli fallback logic, plus an embedded interactive 5-question quiz with shuffled, offline-gradable options.",
+      "files": [],
+      "assertions": [
+        "A single self-contained HTML file was produced and saved outside the repository (e.g. under /tmp)",
+        "The HTML file has no external dependencies (no CDN links, external fonts, or network calls) and opens/renders as a complete document",
+        "The HTML contains Background, Intuition, Code, and Quiz sections in that order",
+        "The quiz contains exactly 5 multiple-choice questions with working click-to-reveal JavaScript feedback that explains why the answer is right/wrong",
+        "The correct answer position varies across the 5 questions rather than always being in the same slot, and answer text does not leak visually before selection (e.g. via title attributes or ordering)",
+        "The explanation accurately reflects the atlassian-mcp-server-preferred-with-jira-cli-fallback logic described in the actual diff"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Explain commit 1c5a322 (the CI action version bumps for the website workflows) to me and quiz me on it. I don't have a strong preference on format, whatever's easiest.",
+      "expected_output": "Since the user has no format preference, the skill should ask which mode (HTML vs live chat) or pick one and explain why; either way it should produce an accurate explanation of the CI version bumps plus a 5-question quiz built from real behavior/trade-off questions, not trivia.",
+      "files": [],
+      "assertions": [
+        "Response acknowledges the format choice (HTML vs live chat) explicitly rather than silently picking one with no mention",
+        "Response correctly identifies which GitHub Actions versions changed in build-website.yml and deploy-website.yml (verifiable against git show 1c5a322)",
+        "A working quiz (either embedded HTML or live first question) is actually produced, not just a plain summary with no quiz",
+        "Quiz content is about the consequences/reasoning of bumping CI action versions (e.g. why pinning matters, what breaks if skipped) rather than surface trivia like line counts",
+        "Response scope stays proportional to the small, config-only nature of this diff rather than inventing unrelated code-behavior claims"
+      ]
+    }
+  ]
+}
