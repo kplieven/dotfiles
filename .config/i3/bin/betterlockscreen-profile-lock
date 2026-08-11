@@ -1,0 +1,42 @@
+#!/bin/bash
+
+set -euo pipefail
+
+BLS_CACHE_DIR="$HOME/.cache/betterlockscreen"
+BLS_PROFILE_ROOT="$HOME/.cache/betterlockscreen-profiles"
+WALLPAPER_PATH="${BETTERLOCKSCREEN_WALLPAPER:-$HOME/Pictures/wallpapers/1.jpg}"
+
+build_layout_signature() {
+    xrandr --query 2>/dev/null | awk '
+        / connected/ && !/disconnected/ {
+            geometry = "unknown"
+            if (match($0, /[0-9]+x[0-9]+\+[0-9]+\+[0-9]+/)) {
+                geometry = substr($0, RSTART, RLENGTH)
+            }
+            print $1 ":" geometry
+        }
+    ' | sort | paste -sd'|' -
+}
+
+layout_signature="$(build_layout_signature)"
+if [[ -z "$layout_signature" ]]; then
+    layout_signature="no-connected-displays"
+fi
+
+profile_key="$(printf '%s' "$layout_signature" | sha1sum | awk '{print $1}')"
+profile_cache_dir="$BLS_PROFILE_ROOT/$profile_key"
+
+mkdir -p "$BLS_PROFILE_ROOT"
+
+if [[ ! -d "$profile_cache_dir/current" ]]; then
+    betterlockscreen -q -u "$WALLPAPER_PATH"
+    rm -rf "$profile_cache_dir"
+    mkdir -p "$profile_cache_dir"
+    cp -a "$BLS_CACHE_DIR"/. "$profile_cache_dir"/
+else
+    rm -rf "$BLS_CACHE_DIR"
+    mkdir -p "$BLS_CACHE_DIR"
+    cp -a "$profile_cache_dir"/. "$BLS_CACHE_DIR"/
+fi
+
+betterlockscreen -q -l dimblur
