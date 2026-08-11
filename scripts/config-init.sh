@@ -40,3 +40,7 @@ fi
 
 echo "Dotfiles successfully checked out."
 config config status.showUntrackedFiles no
+
+echo "Installing knowledge-tracking statusline extension..."
+node "$HOME/.copilot/extensions/knowledge-tracking/install.mjs" install
+echo "Knowledge-tracking extension installed."
