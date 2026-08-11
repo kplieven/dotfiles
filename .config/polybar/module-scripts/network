@@ -49,6 +49,10 @@ ipv4_for_iface() {
 
 wifi_ssid() {
     local iface="$1"
+    if command -v iwctl >/dev/null 2>&1; then
+        iwctl station "$iface" show 2>/dev/null | grep "Connected network" | awk '{print $NF}'
+        return 0
+    fi
     if command -v iwgetid >/dev/null 2>&1; then
         iwgetid "$iface" --raw 2>/dev/null || true
         return 0
