@@ -60,3 +60,5 @@
     insteadOf = ssh://git@github.com/barcoemu/
 [url "ssh://git@github-work-443/barcoemu/"]
 	insteadOf = ssh://git@ssh.github.com:443/barcoemu/
+[safe]
+	bareRepository = all

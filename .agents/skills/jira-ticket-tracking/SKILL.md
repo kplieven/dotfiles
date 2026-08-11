@@ -1,147 +1,174 @@
 ---
 name: jira-ticket-tracking
-description: Use when given a Jira ticket to investigate or work on. Records findings, branches, failed attempts, and current state to ~/knowledge-base/ in Obsidian markdown for AI and human resumption.
+description: Use when the user explicitly invokes /jira-ticket-tracking, when Jira ticket tracking is already active for the session, or when a bare Jira ticket identifier appears and the user should be offered ticket tracking.
 ---
 
 # Jira Ticket Tracking
 
 ## Overview
 
-When starting work on a Jira ticket, create a living investigation note in `~/knowledge-base/tickets/`. The note is the single source of truth for findings, dead ends, working branches, and current focus — optimized for AI resumption and human readability.
+Each Jira ticket gets one durable note at `~/knowledge-base/tickets/TICKET-ID-slug.md`. The note is the persistent record of investigation, findings, and resolution. Active-ticket state is session-local — it lives only in conversation context and is never persisted to disk.
 
-## Quick Start
+**Tracking activates only on explicit invocation — see [Activation](#activation).**
 
-```
-Ticket received → Create note → Work → Update note continuously → Sync
-```
+## Activation
 
-**File path:** `~/knowledge-base/tickets/TICKET-ID-short-slug.md`
-**Example:** `~/knowledge-base/tickets/INFRA-4821-redis-failover-downtime.md`
+Ticket tracking is **explicit only**. There are exactly two ways it starts:
 
-## Note Template
+1. The user runs `/jira-ticket-tracking TICKET-ID`.
+2. The user answers "yes" to an offer to start tracking (this counts as explicit consent and is equivalent to running the command).
 
-```markdown
+### A bare ticket identifier does NOT activate tracking
+
+When the user merely mentions a ticket identifier (for example writes `INFRA-4821`, "look at INFRA-4821", or pastes a ticket URL) without the `/jira-ticket-tracking` command:
+
+- **Do not** create a note.
+- **Do not** open or write to an existing note.
+- **Do not** set an active ticket.
+- **Do not** run sync.
+- **Do not** call `knowledge_tracking_state`.
+
+Instead:
+
+1. Answer the user's actual question normally.
+2. Offer tracking once, in one line, naming the exact command:
+   > "Want me to track INFRA-4821 in the knowledge base? Run `/jira-ticket-tracking INFRA-4821` (or say yes)."
+3. If an existing note for the identifier is already known from earlier in the session, you may mention that it exists. Do not glob, read, or modify the knowledge base just to answer a bare mention.
+4. If the user declines or ignores the offer, do not repeat it for that ticket in this session and do not write anything.
+
+Everything below this section — note lookup, note creation, frontmatter, writes, sync, UI state — applies **only after** explicit activation.
+
+## Note Lookup and Creation
+
+After explicit activation, when opening or creating a note for `TICKET-ID`:
+
+1. Search `~/knowledge-base/tickets/TICKET-ID-*.md`.
+2. **Zero matches** → create one note at `tickets/TICKET-ID-slug.md` (use a descriptive slug if known, otherwise `unknown`).
+3. **One match** → reuse it.
+4. **Multiple matches** → stop with a duplicate-note error. List the files, ask the user which to keep, and do not set active ticket or write anything until resolved. This is a lookup failure, not a sync failure — do not run sync and do not quote the sync exit-`2` rule for it.
+
+## Note Frontmatter Contract
+
+Required fields for every note:
+
+```yaml
 ---
 ticket: TICKET-ID
-title: Full ticket title
-synopsis: One sentence — what needs to happen (shown in /jira-ticket-tracking listing)
-status: in-progress          # values: investigating | in-progress | blocked | resolved | closed
-priority: high               # values: critical | high | medium | low
-tags: [redis, infrastructure, performance]
-branch: fix/short-branch-name
+project: project-name-or-unknown
+title: Full title or unknown
+synopsis: One-sentence known objective or unknown
+status: investigating
+priority: unknown
+tags: []
+branch: unknown
 created: YYYY-MM-DD
 updated: YYYY-MM-DD
-resolved: YYYY-MM-DD         # only when status: resolved or closed
 ---
+```
 
-# TICKET-ID: Full Ticket Title
+Add `resolved: YYYY-MM-DD` only when status is `resolved` or `closed`.
+
+**Do not invent Jira metadata.** If a field value is not known from the user or from the note, set it to `unknown`. Never fabricate titles, descriptions, priorities, or tags.
+
+## Note Body Template
+
+```markdown
+# TICKET-ID: Title
 
 > [!status]+ Current Status
-> **Status:** in-progress  
-> **Current focus:** What you are doing RIGHT NOW (one line — for AI resumption)  
-> **Blocked by:** (if blocked) what's blocking you
+> **Status:** investigating
+> **Current focus:** (one line — for AI resumption)
+> **Blocked by:** (if blocked)
 
 ## Problem
 
 Crisp description of what is broken and when it happens.
-Include: affected versions, environments, reproduction conditions.
 
 ## Root Cause
 
 > [!tip] Root Cause
-> (Fill in when found) Mechanistic explanation of WHY it breaks.
-> Link cause to symptom explicitly.
+> (Fill in when found) Mechanistic explanation.
 
 ## Investigation Log
 
 ### YYYY-MM-DD — Session title
 
-What you found, commands run, observations. Be specific.
-Reference exact config keys, error messages, line numbers.
+What you found, commands run, observations.
 
 ## Approaches Tried
 
 | Approach | Result | Notes |
 |----------|--------|-------|
-| Description of attempt | ✅ Works / ❌ Failed / ⚠️ Partial | Why it worked/failed |
-
-> [!warning] Dead Ends
-> List anything that looked promising but failed, so others don't repeat it.
+| Description | ✅ / ❌ / ⚠️ | Why |
 
 ## Fix / Solution
 
-Steps to resolve. Include exact config values, commands, or code diffs.
+Steps to resolve.
 
 ## Branches & Commits
 
 | Branch | Status | Notes |
 |--------|--------|-------|
-| `fix/branch-name` | active / merged / abandoned | What's in it, caveats |
-
-> [!caution] Branch Caveats
-> Note if a branch was created before root cause was known.
 
 ## Related
 
-- [[TICKET-ID]] — related ticket
-- [[runbook-name]] — relevant runbook
-- External links: [title](url)
+- (links to other tickets, project notes, runbooks)
 
 ## Next Steps
 
-- [ ] Specific actionable task
-- [ ] Another task
+- [ ] Actionable item
 ```
+
+**Replace every placeholder before saving.** The template above is a shape, not content. A saved note must never contain the literal placeholder text — `Title`, `(one line — for AI resumption)`, `(if blocked)`, `Crisp description of what is broken and when it happens.`, `| Description | ✅ / ❌ / ⚠️ | Why |`, `Steps to resolve.`, `(links to other tickets, project notes, runbooks)`, or `- [ ] Actionable item`. If you have no content for a section, leave the section body empty or write `unknown` — for the heading that means `# INFRA-4821: unknown`, and for an empty table it means keeping only the header row. Leaving the placeholder in a saved note is a defect, not a neutral default.
 
 ## Updating the Note
 
-Update the note **during** the session, not after. Key moments to update:
-- When you find something (add to Investigation Log)
-- When you try something that fails (add to Approaches Tried with ❌)
-- When focus shifts (update `Current focus` in the status callout)
-- When you stop for the day (update `updated:` date)
+Update the note **during** the session, not after. Key moments:
+- Finding → add to Investigation Log
+- Failed attempt → add to Approaches Tried with ❌
+- Focus shift → update `Current focus`
+- Any write → update `updated:` date
 
-The `Current focus` line is the most important field for AI resumption — keep it accurate.
+The `Current focus` line is the most important field for AI resumption.
 
-## Sync — Automatic and Silent
+## Sync
 
-**After every note write**, trigger a background sync. Never mention it, never wait for it, never report it unless it fails:
-
-```bash
-~/.agents/skills/jira-ticket-tracking/sync-kb.sh &>/dev/null &
-```
-
-Fire and forget. The user should never know it happened.
-
-**Only surface sync to the user when:**
-- The script exits non-zero (conflict requiring manual resolution)
-- The user explicitly asks about sync status
-
-The script uses `git bundle` + `rsync` — no shared remote needed, just SSH access to `ss02`.
-
-### How Conflicts Are Resolved
-
-The sync uses git on both sides. When both machines edited the same file:
-
-1. The script tries `git merge --allow-unrelated-histories` — if clean, done.
-2. On conflict, git leaves conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`).
-3. **AI resolution protocol:** Read both sides of the conflict. The correct merge is almost always: take all unique facts from both sides. Never discard findings. Combine them into a single coherent section.
-4. After resolving: `git add <file>` and `git commit -m "merge: resolve conflict in TICKET-ID"`
-5. Re-run `sync-kb.sh` to propagate the resolution to ss02.
-
-If a conflict is too complex to auto-resolve, the script prints `CONFLICT: manual review needed` and exits with code 1.
-
-## Pulling Changes Made Directly on ss02
-
-`sync-kb.sh` is bidirectional, but only when it's invoked from your **local** machine — it assumes `REMOTE=ss02` and pushes/pulls relative to that. If you (or an agent session) edited notes directly on ss02, nothing automatically flows back to local, since there's no equivalent script on ss02 targeting local.
-
-Run `/jira-ticket-tracking pull` (from local) to fix this: it commits any uncommitted changes on ss02, bundles ss02's history, and merges it into the local knowledge base — one direction only, ss02 → local. It does **not** push local changes to ss02 (use the normal auto-sync or run `sync-kb.sh` for that).
+After every note write, run sync **synchronously**:
 
 ```bash
-~/.agents/skills/jira-ticket-tracking/pull-kb.sh --verbose
+~/knowledge-base/.tools/kb-sync.sh
 ```
 
-Conflicts follow the same AI resolution protocol as `sync-kb.sh` (see below): keep all unique facts from both sides, resolve, `git add`/`git commit`, then re-run.
+Handle exit codes:
+- **`0`** — success. Say nothing to the user.
+- **`75`** — locally durable, remote sync deferred. Warn the user once per session with this exact line, including the deferral half: "Note saved locally; remote sync deferred." Do not shorten it to "saved locally" and do not repeat it for subsequent `75` exits.
+- **`2`** — retained merge conflict. The note contains conflict markers. **Stop all further note writes until the conflict is resolved.** Report it to the user, then resolve: read both sides, keep all unique facts, remove the markers, `git add`, `git commit`, re-run sync, and only resume writing once sync returns `0`.
+
+Rules that must not be broken:
+
+- Run sync **synchronously** and wait for it. Never background or detach it (`&`, `nohup`, `setsid`, `disown`, async job).
+- Never suppress its output or exit code (`&>/dev/null`, `|| true`, ignoring `$?`).
+- Never report success for a write whose sync exit code was not observed.
+- Sync follows a write. Do not run it when nothing was written — opening or reading a note is not a write.
+
+## UI State Tool (Optional)
+
+After the first note write for a ticket, call `knowledge_tracking_state`:
+
+```json
+{
+  "action": "activate",
+  "kind": "jira",
+  "identifier": "TICKET-ID",
+  "summary": "known synopsis or concise current objective"
+}
+```
+
+If `knowledge_tracking_state` is unavailable, warn once ("UI state tool not available; tracking continues without UI indicator") and continue normally. Do not retry or error.
+
+When **switching** tickets: update the previous note's `Current focus` to reflect the stopping point, then call the tool with `action: "activate"` for the new ticket.
+
+When **closing** the active ticket: call the tool with `action: "stop"`.
 
 ## /jira-ticket-tracking Commands
 
@@ -150,61 +177,72 @@ Conflicts follow the same AI resolution protocol as `sync-kb.sh` (see below): ke
 | `/jira-ticket-tracking list` | List all open tickets (status ≠ `closed`) with synopsis |
 | `/jira-ticket-tracking all` | List every ticket, open and closed |
 | `/jira-ticket-tracking closed` | List only closed tickets |
-| `/jira-ticket-tracking TICKET-123` | Open or create a ticket note **and make it the active ticket for this session** (see below) |
-| `/jira-ticket-tracking close TICKET-123` | Set `status: closed`, set `resolved:` date, sync |
-| `/jira-ticket-tracking pull` | Pull changes from ss02 into local (one-directional, ss02 → local only) |
+| `/jira-ticket-tracking TICKET-123` | Open or create note, set as active ticket for session |
+| `/jira-ticket-tracking close TICKET-123` | Set `status: closed`, add `resolved:` date, sync, clear active ticket |
+| `/jira-ticket-tracking pull` | Pull changes from remote into local knowledge base |
+
+A bare `TICKET-123` typed **without** the `/jira-ticket-tracking` prefix is not a command. It never opens, creates, or activates anything — see [Activation](#activation).
 
 **Listing format:**
 
 ```
-INFRA-4821  [in-progress]  Redis cluster failover causes 30s downtime during leader election
-AUTH-201    [blocked]      OAuth token refresh fails silently on mobile clients
+INFRA-4821  [in-progress]  Redis cluster failover causes 30s downtime
+AUTH-201    [blocked]      OAuth token refresh fails silently on mobile
 ```
-
-The `list` command and `closed` never show tickets outside their scope — closed tickets are hidden from `list`, and only closed tickets show under `closed`. Use `all` to see everything regardless of status.
 
 ## Session Ticket Tracking
 
-Running `/jira-ticket-tracking TICKET-123` does two things: it opens (or creates) the note, and it sets `TICKET-123` as the **active ticket for the rest of this session**. Keep track of the active ticket in your own context for the session's duration (it is not a one-off action).
+Running `/jira-ticket-tracking TICKET-123` opens (or creates) the note and sets `TICKET-123` as the **active ticket** for this session. Active state is held in conversation context only. Nothing else sets the active ticket — a bare identifier mention does not.
 
 While a ticket is active:
-- Continuously write findings, commands run, dead ends, and focus changes into that ticket's note as described in "Updating the Note" — the user does not need to re-invoke `/jira-ticket-tracking` for every update.
-- Update the `Current focus` line whenever the task at hand shifts, and the `updated:` date on every write.
-- Sync silently after every write (see "Sync — Automatic and Silent").
+- Write findings, commands, dead ends, and focus changes into the note continuously.
+- Update `Current focus` on every focus shift and `updated:` on every write.
+- Sync after every write.
 
-Switching the active ticket: running `/jira-ticket-tracking OTHER-456` while a different ticket is active simply switches the active ticket to `OTHER-456` — stop writing to the previous ticket and start writing to the new one.
+### Switching Tickets
+
+Running `/jira-ticket-tracking OTHER-456` while a ticket is active:
+1. Update the previous note's `Current focus` to reflect where work stopped.
+2. Sync the previous note.
+3. Open the new ticket's note and set it as active.
+4. Call `knowledge_tracking_state` with `action: "activate"` for the new ticket (if available).
 
 ### Drift Detection
 
-Before doing substantive work in a session with an active ticket, check whether the user's current request still relates to that ticket (compare against its `title`, `synopsis`, `tags`, and `Problem` section). If the request looks unrelated:
+Before doing substantive work in a session with an active ticket, check whether the user's request relates to that ticket (compare against `title`, `synopsis`, `tags`, `Problem`). If unrelated:
 
-1. Do not silently keep writing to the active ticket, and do not silently drop tracking either.
-2. Ask the user (one focused question, with choices) what to do, for example:
-   - "This looks unrelated to TICKET-123 ({synopsis}). What would you like to do?"
-     - Continue tracking this work under TICKET-123
-     - Stop ticket tracking for this session
-     - Switch to a different ticket (if an existing open ticket's title/tags plausibly match the new request, name it as a choice; otherwise offer to create a new ticket note)
-3. Act on the user's choice: keep writing to the same ticket, clear the active ticket (no further auto-writes until the user runs `/jira-ticket-tracking` again), or switch the active ticket per their selection.
+1. Do not silently write to the active ticket. Do not silently drop tracking.
+2. Ask one focused question with choices:
+   - Continue tracking under TICKET-ID
+   - Stop ticket tracking for this session
+   - Switch to a different ticket (name a plausible match if one exists, or offer to create new)
+3. Act on the user's choice.
 
 ## Closing a Ticket
 
-When `/jira-ticket-tracking close TICKET-123` is invoked:
-1. Find `~/knowledge-base/tickets/TICKET-123-*.md`
-2. Set `status: closed`
-3. Set `resolved: YYYY-MM-DD` (today)
-4. Update `updated: YYYY-MM-DD`
-5. Sync silently in background
-6. If `TICKET-123` was the session's active ticket, clear the active ticket (no further auto-writes)
+When `/jira-ticket-tracking close TICKET-123`:
+1. Find the note (same lookup rules — zero/one/multiple matches).
+2. Set `status: closed`, add `resolved: YYYY-MM-DD`, update `updated:`.
+3. Sync.
+4. If active, clear active ticket and call `knowledge_tracking_state` with `action: "stop"` (if available).
 
-
-
-When resuming work on a ticket:
+## Resuming Work
 
 1. Open `~/knowledge-base/tickets/TICKET-ID-*.md`
-2. Read the frontmatter `status` and `branch` fields first
-3. Read the `Current focus` callout — this is where you left off
-4. Scan `Approaches Tried` to know what NOT to repeat
+2. Read `status` and `branch` from frontmatter
+3. Read `Current focus` — this is where you left off
+4. Scan `Approaches Tried` to avoid repeating dead ends
 5. Continue from `Next Steps`
+
+## Dual-Tracker Routing
+
+When project tracking (e.g. a `projects/` note) is also active in the session:
+
+- **Jira note** gets: execution details, commands run, ticket status changes, investigation log entries.
+- **Project note** gets: reusable mechanistic findings only — insights that apply beyond this single ticket. Do not copy routine progress or ticket administration.
+- **Cross-links:** Add `Project: [[projects/project-name/topic]]` in the Jira note's Related section. Add `Ticket: [[tickets/TICKET-ID-slug]]` in the project note.
+- **Write only what was established.** A reusable finding is generalised in *scope*, never enriched with new detail. Do not add default values, recommended ranges, timings, percentages, cycle counts, or failure mechanisms that the user did not state and that are not already recorded in a note. "This applies to all Redis clusters" is generalisation and is fine; "the default is 30000ms and this adds ~3.5s per cycle" is fabrication unless someone said so.
+- Do not raise a drift question when updating a project note as part of dual-tracker routing — this is expected behaviour.
 
 ## Naming Conventions
 
@@ -212,6 +250,6 @@ When resuming work on a ticket:
 |-------|-----------|
 | Filename | `TICKET-ID-kebab-case-slug.md` |
 | `status` | `investigating` → `in-progress` → `blocked` / `resolved` / `closed` |
-| `synopsis` | One sentence: what needs to happen next (shown in `/kb` listing) |
-| Tags | lowercase, hyphenated: `redis`, `auth-service`, `data-loss` |
-| Branch | match the branch that exists in git: `fix/...`, `feat/...` |
+| `synopsis` | One sentence: what needs to happen (shown in listing) |
+| Tags | lowercase, hyphenated: `redis`, `auth-service` |
+| Branch | match git: `fix/...`, `feat/...` |
