@@ -23,9 +23,9 @@ control_chars = ['','','','']
 # else default key value.
 # example:
 display_player_prefix = {
-    "spotify":  '  ',
-    "firefox":  '',
-    "default":  ''
+    "spotify":  '   ',
+    "firefox":  ' 󰈹  ',
+    "default":  '   '
 }
 
 # (list) : list of metadata fields based on mpris sepecification.
@@ -132,6 +132,16 @@ def update_message():
         tmp_message = "No player available"
         update_prefix_suffix()
     else:
+        # Auto-switch to an actively playing player if current one is paused/stopped.
+        # Prefer the last playing player (highest index) to match playerctl's default.
+        current_status = get_status(players[current_player])
+        if current_status != "Playing":
+            for index, player in reversed(list(enumerate(players))):
+                if get_status(player) == "Playing":
+                    current_player = index
+                    last_player_name = get_name_by_index(current_player)
+                    break
+
         name = get_name_by_index(current_player)
         status = get_status(players[current_player])
         metadata_obj = get_metadata(players[current_player])
@@ -192,14 +202,16 @@ def make_visual_len(text, visual_desired_length):
     return altered_text
 
 def print_text():
-    global display_text, message_display_len, players, player_names, display_prefix, display_suffix
+    global display_text, message_display_len, players, player_names, display_prefix, display_suffix, last_player_name
     if hide_output and len(players)==0:
         print("", flush = True)
         return
     scroll()
+    player_flag = ("-p " + last_player_name) if last_player_name else ""
     print(
         display_prefix +
-        "%%{A1:playerctl play-pause:}%%{T%d}%s%%{T-}%%{A}" % (
+        "%%{A1:playerctl %s play-pause:}%%{T%d}%s%%{T-}%%{A}" % (
+            player_flag,
             font_index,
             make_visual_len(display_text, message_display_len)
         ) + display_suffix, flush=True
