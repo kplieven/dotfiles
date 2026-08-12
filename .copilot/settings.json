@@ -22,7 +22,7 @@
     "showBranch": true,
     "showContextWindow": true,
     "showQuota": true,
-    "showAiUsed": false
+    "showAiUsed": true
   },
   "model": "auto",
   "statusLine": {
