@@ -25,6 +25,7 @@ control_chars = ['','','','']
 display_player_prefix = {
     "spotify":  '   ',
     "firefox":  ' 󰈹  ',
+    "edge":  '   ',
     "default":  '   '
 }
 
