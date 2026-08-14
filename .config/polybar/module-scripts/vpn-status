@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+main() {
+    if ! command -v cato-sdp >/dev/null 2>&1; then
+        # echo "%{F#5294e2}%{F-} off"
+        exit 0
+    fi
+
+    if cato-sdp status 2>/dev/null | grep -q '^[[:space:]]*state[[:space:]]*=[[:space:]]*STATE_AUTHENTICATED[[:space:]]*$'; then
+        echo "%{F#5294e2}%{F-} on"
+    else
+        echo "%{F#5294e2}%{F-} off"
+    fi
+}
+
+main
