@@ -39,4 +39,6 @@ else
     cp -a "$profile_cache_dir"/. "$BLS_CACHE_DIR"/
 fi
 
+killall dunst
 betterlockscreen -q -l dimblur
+dunst
