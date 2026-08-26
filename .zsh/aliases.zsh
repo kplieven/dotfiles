@@ -34,6 +34,11 @@ if [ $? -eq 0 ]; then
   alias du='dust'
 fi
 
+which cpx > /dev/null 2>&1
+if [ $? -eq 0 ]; then
+  alias cp='cpx'
+fi
+
 alias ls='ls --color=auto'
 
 # vim using
