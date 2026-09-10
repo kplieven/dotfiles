@@ -57,6 +57,88 @@ confirm() {
     [[ "${reply,,}" != "n" ]]
 }
 
+# ---------------------------------------------------------------------------
+# Rust CLI tools
+#
+# Several categories need a binary that ships as a Rust crate. Rather than
+# compile them — a full toolchain and many minutes — fetch the upstream
+# prebuilt release with cargo-binstall. Binaries land in ~/.local/bin, which
+# .profile already puts on PATH, so they work whether or not the Rust
+# category was selected.
+# ---------------------------------------------------------------------------
+BINSTALL_ROOT="$HOME/.local"
+
+ensure_cargo_binstall() {
+    if command -v cargo-binstall &>/dev/null; then
+        warn "cargo-binstall already installed"
+        return 0
+    fi
+
+    sudo apt-get install -y curl
+    curl -L --proto '=https' --tlsv1.2 -sSf \
+        https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+    # The installer self-installs into $CARGO_HOME/bin, which is not on PATH
+    # when rustup was never run on this machine.
+    export PATH="$HOME/.cargo/bin:$PATH"
+
+    if ! command -v cargo-binstall &>/dev/null; then
+        fail "cargo-binstall installation failed"
+        return 1
+    fi
+
+    ok "cargo-binstall installed"
+}
+
+# Binary names a crate installed, read from cargo's tracking file. Crate name
+# and binary name often differ (ripgrep -> rg, bottom -> btm, rm-improved -> rip).
+crate_binaries() {
+    local crate="$1" toml="$BINSTALL_ROOT/.crates.toml"
+    [[ -f "$toml" ]] || return 0
+    sed -n "s/^\"$crate [^\"]*\" = \[\(.*\)\]$/\1/p" "$toml" | tr -d '\" ' | tr ',' '\n'
+}
+
+# ~/.cargo/bin precedes ~/.local/bin in the default PATH, so a leftover
+# cargo-installed copy keeps winning after we install a newer one.
+warn_shadowed_binaries() {
+    local crate="$1" name
+    [[ -d "$HOME/.cargo/bin" ]] || return 0
+
+    while IFS= read -r name; do
+        [[ -n "$name" ]] || continue
+        if [[ -e "$HOME/.cargo/bin/$name" ]]; then
+            warn "$name is also in ~/.cargo/bin, which precedes ~/.local/bin on PATH — remove the old copy with: rm ~/.cargo/bin/$name"
+        fi
+    done < <(crate_binaries "$crate")
+}
+
+# install_cargo_tools <crate>...
+install_cargo_tools() {
+    ensure_cargo_binstall || return 1
+
+    mkdir -p "$BINSTALL_ROOT/bin"
+
+    local binstall_args=(-y --root "$BINSTALL_ROOT")
+    # Without cargo there is nothing to fall back to, so fail fast rather than
+    # start a source build that cannot finish.
+    if ! command -v cargo &>/dev/null; then
+        binstall_args+=(--disable-strategies compile)
+    fi
+
+    local tool failed=0
+    for tool in "$@"; do
+        if cargo-binstall "${binstall_args[@]}" "$tool"; then
+            ok "$tool (prebuilt)"
+            warn_shadowed_binaries "$tool"
+        else
+            fail "$tool"
+            failed=1
+        fi
+    done
+
+    return "$failed"
+}
+
 install_0xproto_font() {
     local font_dir="$HOME/.local/share/fonts/0xProtoNerdFont"
     mkdir -p "$font_dir"
@@ -279,14 +361,14 @@ configure_sway_vimix_cursors() {
 # ---------------------------------------------------------------------------
 CATEGORIES=(shell build-tools rust nvim git terminal docker desktop-x11 desktop-wayland)
 LABELS=(
-    "Shell          — zsh, antigen, set as default shell"
+    "Shell          — zsh, antigen, CLI tools (eza, ripgrep, bat, fd, dust, starship, bottom, rm-improved, cpx), set as default shell"
     "Build tools    — C/C++ compiler toolchain and build/debug utilities"
-    "Rust toolchain — rustup, eza, ripgrep, bat, fd, dust, starship, bottom, rm-improved, bluetui, impala, cpx"
-    "Neovim         — build from source, sync plugins"
+    "Rust toolchain — rustup, cargo, common native build dependencies"
+    "Neovim         — build from source, tree-sitter-cli, sync plugins"
     "Git tools      — lazygit"
     "Terminal       — kitty, JetBrains Mono Nerd Font, Symbols Nerd Font"
     "Docker         — Docker Engine and Compose plugin"
-    "Desktop (X11)  — i3, arandr, autorandr, betterlockscreen, picom, polybar, dunst, playerctl, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
+    "Desktop (X11)  — i3, arandr, autorandr, betterlockscreen, picom, polybar, dunst, playerctl, bluetui, impala, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
     "Desktop (Sway) — sway, waybar, kanshi, Vimix cursors"
 )
 
@@ -305,14 +387,14 @@ usage() {
     echo ""
     echo "Options:"
     echo "  --all              Install everything"
-    echo "  --shell            Zsh, antigen"
+    echo "  --shell            Zsh, antigen, CLI tools (eza, ripgrep, bat, fd, dust, starship, bottom, rm-improved, cpx)"
     echo "  --build-tools      C/C++ build toolchain and utilities"
-    echo "  --rust             Rust toolchain and cargo CLI tools"
-    echo "  --nvim             Neovim (built from source)"
+    echo "  --rust             Rust toolchain (rustup, cargo)"
+    echo "  --nvim             Neovim (built from source), tree-sitter-cli"
     echo "  --git              Lazygit"
     echo "  --terminal         Kitty terminal, JetBrains Mono Nerd Font, Symbols Nerd Font"
     echo "  --docker           Docker Engine and Compose plugin"
-    echo "  --desktop-x11      i3, arandr, autorandr, betterlockscreen, polybar, dunst, playerctl, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
+    echo "  --desktop-x11      i3, arandr, autorandr, betterlockscreen, polybar, dunst, playerctl, bluetui, impala, Vimix cursors, 0xProto Nerd Font, Symbols Nerd Font"
     echo "  --desktop-wayland  Sway, waybar, kanshi, Vimix cursors"
     echo "  --help             Show this help message"
     echo ""
@@ -469,6 +551,11 @@ install_shell() {
         warn "antigen already present"
     fi
 
+    # CLI tools referenced by the zsh config
+    if ! install_cargo_tools eza ripgrep bat fd-find du-dust starship bottom rm-improved cpx; then
+        return 1
+    fi
+
     # set zsh as default shell
     if [[ "$SHELL" != *"zsh"* ]]; then
         chsh -s "$(which zsh)"
@@ -552,24 +639,6 @@ install_rust() {
     # shellcheck disable=SC1091
     [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
 
-    info "Installing cargo CLI tools (this may take a while)..."
-    local tools=(eza ripgrep bat fd-find du-dust starship bottom rm-improved tree-sitter-cli bluetui impala cpx)
-    local failed_tools=0
-    for tool in "${tools[@]}"; do
-        if cargo install --locked "$tool" 2>/dev/null; then
-            ok "$tool (locked)"
-        elif cargo install "$tool" 2>/dev/null; then
-            warn "$tool installed without --locked fallback"
-        else
-            fail "$tool"
-            failed_tools=1
-        fi
-    done
-
-    if [[ "$failed_tools" -ne 0 ]]; then
-        return 1
-    fi
-
     ok "Rust toolchain installed"
 }
 
@@ -616,6 +685,9 @@ install_nvim() {
     rm -rf "$build_dir"
 
     ok "Neovim $nvim_version installed"
+
+    # tree-sitter CLI: used by nvim-treesitter to build parsers
+    install_cargo_tools tree-sitter-cli || return 1
 }
 
 # ---------------------------------------------------------------------------
@@ -734,6 +806,11 @@ install_desktop_x11() {
 
     # polybar
     sudo apt-get install -y polybar 2>/dev/null || warn "polybar not in apt, install manually"
+
+    # Launched by the polybar network and bluetooth modules
+    if ! install_cargo_tools bluetui impala; then
+        return 1
+    fi
 
     ok "X11 desktop tools installed"
 }
