@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Percentage of full range moved per scroll step.
+STEP_PCT=5
+# Never drop below this, so scrolling down can't black out the screen.
+MIN_PCT=1
+
+CARD="intel_backlight"
+BASE="/sys/class/backlight/${CARD}"
+LOCK="${XDG_RUNTIME_DIR:-/tmp}/polybar-brightness.lock"
+
 lid_is_closed() {
     local state
     for state in /proc/acpi/button/lid/*/state; do
@@ -21,20 +30,73 @@ lid_is_closed() {
     return 1
 }
 
-main() {
-    local card="intel_backlight"
-    local base="/sys/class/backlight/${card}"
-    local actual max pct
-
-    lid_is_closed && exit 0
-    [[ -r "${base}/actual_brightness" && -r "${base}/max_brightness" ]] || exit 0
-
-    actual="$(<"${base}/actual_brightness")"
-    max="$(<"${base}/max_brightness")"
-    (( max > 0 )) || exit 0
-
-    pct=$(( actual * 100 / max ))
-    echo "${pct}%"
+# Writes go through logind rather than sysfs: /sys/class/backlight/*/brightness
+# is root-owned 0644, so a direct write needs root or a video-group udev rule.
+set_brightness() {
+    busctl call org.freedesktop.login1 /org/freedesktop/login1/session/auto \
+        org.freedesktop.login1.Session SetBrightness ssu \
+        backlight "$CARD" "$1" >/dev/null
 }
 
-main
+report() {
+    local actual max
+    actual="$(<"${BASE}/actual_brightness")"
+    max="$(<"${BASE}/max_brightness")"
+    (( max > 0 )) || exit 0
+    echo "$(( actual * 100 / max ))%"
+}
+
+adjust() {
+    local direction="$1"
+    local actual max step floor new
+
+    actual="$(<"${BASE}/actual_brightness")"
+    max="$(<"${BASE}/max_brightness")"
+    (( max > 0 )) || exit 0
+
+    step=$(( max * STEP_PCT / 100 ))
+    (( step > 0 )) || step=1
+    floor=$(( max * MIN_PCT / 100 ))
+    (( floor > 0 )) || floor=1
+
+    if [[ "$direction" == "up" ]]; then
+        new=$(( actual + step ))
+    else
+        new=$(( actual - step ))
+    fi
+
+    if (( new > max )); then
+        new=$max
+    fi
+    if (( new < floor )); then
+        new=$floor
+    fi
+
+    if (( new != actual )); then
+        set_brightness "$new"
+    fi
+}
+
+main() {
+    lid_is_closed && exit 0
+    [[ -r "${BASE}/actual_brightness" && -r "${BASE}/max_brightness" ]] || exit 0
+
+    case "${1-}" in
+        up|down)
+            # Serialise concurrent scroll events; without this a fast flick
+            # read-modify-writes from stale values and drops steps.
+            exec 9>"$LOCK"
+            flock 9
+            adjust "$1"
+            ;;
+        "")
+            report
+            ;;
+        *)
+            echo "usage: ${0##*/} [up|down]" >&2
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
