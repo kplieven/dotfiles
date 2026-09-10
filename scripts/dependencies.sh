@@ -9,7 +9,7 @@ set -euo pipefail
 #   Interactive:  ./dependencies.sh
 #   Install all:  ./dependencies.sh --all
 #   Selective:    ./dependencies.sh --shell --nvim --rust
-#   Curl pipe:    curl -fsSL <url> | bash  (installs all, prompts for nvim version)
+#   Curl pipe:    curl -fsSL <url> | bash  (opens the same interactive menu)
 # =============================================================================
 
 # ---------------------------------------------------------------------------
@@ -398,8 +398,8 @@ usage() {
     echo "  --desktop-wayland  Sway, waybar, kanshi, Vimix cursors"
     echo "  --help             Show this help message"
     echo ""
-    echo "If no flags are given, an interactive menu is displayed."
-    echo "When piped (curl | bash), --all is implied."
+    echo "If no flags are given, an interactive menu is displayed, including"
+    echo "when piped (curl | bash) — nothing is installed without selecting it."
 }
 
 if [[ $# -gt 0 ]]; then
@@ -431,6 +431,12 @@ fi
 # ---------------------------------------------------------------------------
 # Interactive menu (when no flags and TTY is available)
 # ---------------------------------------------------------------------------
+# `[[ -r /dev/tty ]]` is not enough: with no controlling terminal the device
+# node still passes an access() check but cannot be opened.
+tty_available() {
+    ( exec </dev/tty ) 2>/dev/null
+}
+
 show_menu() {
     local current="$1"
     local total="${#CATEGORIES[@]}"
@@ -461,6 +467,13 @@ show_menu() {
 }
 
 interactive_menu() {
+    if ! tty_available; then
+        fail "No terminal available for the selection menu."
+        echo "Pass categories explicitly, for example:"
+        echo -e "  ${BOLD}--shell --nvim${RESET}   or   ${BOLD}--all${RESET}"
+        exit 1
+    fi
+
     local current=0
     local total="${#CATEGORIES[@]}"
 
@@ -470,10 +483,15 @@ interactive_menu() {
     while true; do
         show_menu "$current"
         local key
-        IFS= read -rsn1 key
+        if ! IFS= read -rsn1 key </dev/tty; then
+            printf '\033[?25h'
+            echo ""
+            warn "Input closed — aborted, nothing installed."
+            exit 0
+        fi
 
         if [[ "$key" == $'\x1b' ]]; then
-            IFS= read -rsn2 key
+            IFS= read -rsn2 key </dev/tty || true
             key=$'\x1b'"$key"
         fi
 
@@ -504,11 +522,7 @@ interactive_menu() {
 }
 
 if [[ "$USE_FLAGS" == false ]]; then
-    if [[ -t 0 ]]; then
-        interactive_menu
-    else
-        info "Piped mode detected — installing all categories"
-    fi
+    interactive_menu
 fi
 
 # ---------------------------------------------------------------------------
