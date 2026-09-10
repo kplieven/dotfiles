@@ -168,26 +168,62 @@ package_files_on_disk() {
 repo_exists()  { [[ -d "$DOTFILES_DIR" ]]; }
 sparse_active() { [[ "$(config config --get core.sparseCheckout 2>/dev/null || echo false)" == "true" ]]; }
 
-# Packages recorded by the last run, if any.
+# Packages recorded by the last run, if any. An empty recorded value is a
+# deliberate "none selected" and must not fall back to detection, so presence
+# of the key is tested by exit status rather than by the value being non-empty.
+has_recorded_packages() {
+    config config --get dotfiles.packages &>/dev/null
+}
+
 recorded_packages() {
     config config --get dotfiles.packages 2>/dev/null || true
+}
+
+# Dependency presence, probed once: the menu redraws on every keypress.
+declare -A DEP_PRESENT
+probe_dependencies() {
+    local pkg bin
+    for pkg in "${PACKAGES[@]}"; do
+        bin="${DETECT[$pkg]}"
+        if [[ -n "$bin" ]] && command -v "$bin" &>/dev/null; then
+            DEP_PRESENT[$pkg]=1
+        else
+            DEP_PRESENT[$pkg]=0
+        fi
+    done
+}
+
+# Shown next to each package: is the software this config is for installed?
+dep_marker() {
+    local pkg="$1"
+    if [[ -z "${DETECT[$pkg]}" ]]; then
+        echo " "
+    elif [[ ${DEP_PRESENT[$pkg]:-0} -eq 1 ]]; then
+        echo "${GREEN}●${RESET}"
+    else
+        echo "${YELLOW}○${RESET}"
+    fi
+}
+
+dep_legend() {
+    echo -e "  ${GREEN}●${RESET} dependency installed   ${YELLOW}○${RESET} dependency not found on this machine"
 }
 
 # Pre-tick rule: a package is on if its dependency binary is installed, or if
 # its files are already checked out. The second half makes re-runs show the
 # current selection rather than re-deriving it from the machine.
 detect_packages() {
-    local pkg bin recorded
-    recorded="$(recorded_packages)"
+    local pkg recorded
 
-    if [[ -n "$recorded" ]]; then
-        printf '%s\n' $recorded
+    # A recorded selection wins over anything detected on the machine.
+    if has_recorded_packages; then
+        recorded="$(recorded_packages)"
+        [[ -n "$recorded" ]] && printf '%s\n' $recorded
         return 0
     fi
 
     for pkg in "${PACKAGES[@]}"; do
-        bin="${DETECT[$pkg]}"
-        if [[ -n "$bin" ]] && command -v "$bin" &>/dev/null; then
+        if [[ ${DEP_PRESENT[$pkg]:-0} -eq 1 ]]; then
             printf '%s\n' "$pkg"
         elif repo_exists && [[ -n "$(package_files_on_disk "$pkg" | head -1)" ]]; then
             printf '%s\n' "$pkg"
@@ -257,9 +293,11 @@ show_list() {
         else
             state="[ ]"
         fi
-        echo -e " ${state} ${BOLD}$(printf '%-16s' "$pkg")${RESET} ${LABELS[$i]}"
-        [[ ${SELECTED[$pkg]} -eq 1 ]] && echo -e "     ${count} file(s) in \$HOME"
+        echo -e " ${state} $(dep_marker "$pkg") ${BOLD}$(printf '%-16s' "$pkg")${RESET} ${LABELS[$i]}"
+        [[ ${SELECTED[$pkg]} -eq 1 && "$count" -gt 0 ]] && echo -e "       ${count} file(s) in \$HOME"
     done
+    echo ""
+    dep_legend
     echo ""
     echo -e "  Change with: ${BOLD}config packages${RESET}  |  ${BOLD}config packages add <pkg>${RESET}  |  ${BOLD}config packages remove <pkg>${RESET}"
     echo ""
@@ -302,11 +340,12 @@ show_menu() {
             marker="[ ]"
         fi
         [[ "$i" -eq "$current" ]] && cursor="${BLUE}>${RESET}"
-        echo -e " ${cursor} ${BOLD}$((i + 1))${RESET}) ${marker} ${LABELS[$i]}"
+        echo -e " ${cursor} ${BOLD}$((i + 1))${RESET}) ${marker} $(dep_marker "$pkg") ${LABELS[$i]}"
     done
     echo ""
     echo -e "  ${BOLD}↑/↓${RESET} Move    ${BOLD}Enter${RESET} Toggle    ${BOLD}q${RESET} Confirm    ${BOLD}a${RESET} Select all    ${BOLD}n${RESET} Select none"
     echo ""
+    dep_legend
     echo -e "  Unticked packages stay in the repo — they are only removed from \$HOME."
     echo ""
 }
@@ -479,6 +518,8 @@ fi
 
 # (Re)register the alias on every run so `config packages` self-heals.
 config config alias.packages "!bash $SCRIPT_PATH"
+
+probe_dependencies
 
 case "$MODE" in
     list)
