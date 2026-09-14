@@ -22,6 +22,7 @@ DOTFILES_DIR="$HOME/.dotfiles"
 REPO_URL="${DOTFILES_REPO_URL:-https://github.com/kplieven/dotfiles.git}"
 BACKUP_DIR="$HOME/.dotfiles-backup"
 SCRIPT_PATH="$HOME/scripts/config-init.sh"
+DEPS_SCRIPT_PATH="$HOME/scripts/dependencies.sh"
 
 # When invoked as `config packages`, git exports these into our environment,
 # where they would hijack the git calls below.
@@ -516,8 +517,10 @@ if ! repo_exists; then
     FRESH_CLONE=true
 fi
 
-# (Re)register the alias on every run so `config packages` self-heals.
+# (Re)register the aliases on every run so `config packages` and
+# `config dependencies` self-heal.
 config config alias.packages "!bash $SCRIPT_PATH"
+config config alias.dependencies "!bash $DEPS_SCRIPT_PATH"
 
 probe_dependencies
 

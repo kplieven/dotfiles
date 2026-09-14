@@ -10,7 +10,14 @@ set -euo pipefail
 #   Install all:  ./dependencies.sh --all
 #   Selective:    ./dependencies.sh --shell --nvim --rust
 #   Curl pipe:    curl -fsSL <url> | bash  (opens the same interactive menu)
+#
+# Once the dotfiles are installed, the same script is reachable as:
+#   config dependencies [--all|--shell|--nvim|...]
 # =============================================================================
+
+# When invoked as `config dependencies`, git exports these into our
+# environment, where they would hijack the git clones below.
+unset GIT_DIR GIT_WORK_TREE
 
 # ---------------------------------------------------------------------------
 # Colors

@@ -7,7 +7,7 @@ curl -fsSL https://raw.githubusercontent.com/kplieven/dotfiles/master/scripts/co
 
 Both scripts open an interactive menu — including when piped through `bash`, so nothing is installed without being selected. Pass flags (`--shell --nvim`, or `--all`) to skip the menu.
 
-Run `dependencies.sh` first if you want the machine prerequisites installed for you. It is intended for Ubuntu/Debian and can install shell, Rust, Neovim, Git, terminal, and desktop packages.
+Run `dependencies.sh` first if you want the machine prerequisites installed for you. It is intended for Ubuntu/Debian and can install shell, Rust, Neovim, Git, terminal, and desktop packages. Once the dotfiles are checked out it is also reachable as `config dependencies`, with the same menu and flags.
 
 `config-init.sh` then:
 
