@@ -40,6 +40,7 @@ info()  { echo -e "${BLUE}${BOLD}::${RESET} $*"; }
 ok()    { echo -e "${GREEN}${BOLD}[OK]${RESET}    $*"; }
 warn()  { echo -e "${YELLOW}${BOLD}[SKIP]${RESET}  $*"; }
 fail()  { echo -e "${RED}${BOLD}[FAIL]${RESET}  $*"; }
+already() { echo -e "${GREEN}${BOLD}[HAVE]${RESET}  $*"; }
 
 # ---------------------------------------------------------------------------
 # User input helper — works even when stdin is a pipe (reads from /dev/tty)
@@ -379,8 +380,95 @@ LABELS=(
     "Desktop (Sway) — sway, waybar, kanshi, Vimix cursors"
 )
 
+# What proves a category is already on the machine: the binaries it provides,
+# plus the artifacts whose presence the installers themselves check for. A
+# leading / marks a path (globs allowed), anything else is a binary.
+declare -A DETECT=(
+    [shell]="zsh starship eza rg bat fd dust btm rip cpx $HOME/.zsh/antigen.zsh"
+    [build-tools]="gcc clang cmake ninja meson gdb valgrind pkg-config"
+    [rust]="rustup cargo"
+    [nvim]="nvim tree-sitter fnm"
+    [git]="git lazygit"
+    [terminal]="kitty $HOME/.local/share/fonts/JetBrainsMonoNerdFont $HOME/.local/share/fonts/0xProtoNerdFont/0xProtoNerdFont*.ttf $HOME/.local/share/fonts/NerdFontsSymbolsOnly/*.ttf"
+    [docker]="docker"
+    [desktop-x11]="i3 polybar dunst rofi picom feh flameshot playerctl arandr autorandr betterlockscreen i3lock bluetui impala $HOME/.local/share/icons/Vimix-cursors* $HOME/.themes/Graphite-Dark $HOME/.local/share/icons/Tela-dark $HOME/.local/share/rofi/themes"
+    [desktop-wayland]="sway waybar kanshi swaylock swaybg wl-copy wlogout $HOME/.local/share/icons/Vimix-cursors*"
+)
+
+# cargo-binstall's bin dir is not necessarily on PATH yet in this session.
+have() {
+    local probe="$1"
+    if [[ "$probe" == /* ]]; then
+        compgen -G "$probe" >/dev/null
+    elif command -v "$probe" &>/dev/null; then
+        return 0
+    else
+        [[ -x "$BINSTALL_ROOT/bin/$probe" ]]
+    fi
+}
+
+declare -A DEP_PRESENT DEP_TOTAL
+probe_installed() {
+    local cat probe present total
+    # Split on whitespace only: the path probes hold globs that `have` expands,
+    # and letting the shell expand them here would inflate the totals.
+    set -f
+    for cat in "${CATEGORIES[@]}"; do
+        present=0
+        total=0
+        for probe in ${DETECT[$cat]}; do
+            total=$(( total + 1 ))
+            if have "$probe"; then present=$(( present + 1 )); fi
+        done
+        DEP_PRESENT[$cat]=$present
+        DEP_TOTAL[$cat]=$total
+    done
+    set +f
+}
+
+dep_state() {
+    local cat="$1"
+    if [[ ${DEP_PRESENT[$cat]:-0} -eq 0 ]]; then
+        echo "none"
+    elif [[ ${DEP_PRESENT[$cat]} -eq ${DEP_TOTAL[$cat]} ]]; then
+        echo "all"
+    else
+        echo "some"
+    fi
+}
+
+# Shown next to each category: is what it installs already on this machine?
+dep_marker() {
+    case "$(dep_state "$1")" in
+        all)  echo "${GREEN}●${RESET}" ;;
+        some) echo "${YELLOW}◐${RESET}" ;;
+        *)    echo "${YELLOW}○${RESET}" ;;
+    esac
+}
+
+dep_count() {
+    local cat="$1"
+    [[ "$(dep_state "$cat")" == "some" ]] && echo "  (${DEP_PRESENT[$cat]}/${DEP_TOTAL[$cat]})"
+    return 0
+}
+
+dep_legend() {
+    echo -e "  ${GREEN}●${RESET} installed   ${YELLOW}◐${RESET} partly installed   ${YELLOW}○${RESET} not found on this machine"
+}
+
 declare -A SELECTED
-for cat in "${CATEGORIES[@]}"; do SELECTED[$cat]=1; done
+probe_installed
+
+# Pre-tick rule: a category is on unless everything it installs is already
+# present, so a re-run defaults to topping up whatever the machine is missing.
+# An explicit flag still wins, `--all` included.
+for cat in "${CATEGORIES[@]}"; do
+    if [[ "$(dep_state "$cat")" == "all" ]]; then
+        SELECTED[$cat]=0
+    else
+        SELECTED[$cat]=1
+    fi
+done
 
 declare -A RESULTS
 
@@ -466,8 +554,10 @@ show_menu() {
             cursor="${BLUE}>${RESET}"
         fi
 
-        echo -e " ${cursor} ${BOLD}$((i + 1))${RESET}) ${marker} ${LABELS[$i]}"
+        echo -e " ${cursor} ${BOLD}$((i + 1))${RESET}) ${marker} $(dep_marker "$cat") ${LABELS[$i]}$(dep_count "$cat")"
     done
+    echo ""
+    dep_legend
     echo ""
     echo -e "  ${BOLD}↑/↓${RESET} Move    ${BOLD}Enter${RESET} Toggle    ${BOLD}q${RESET} Confirm    ${BOLD}a${RESET} Select all    ${BOLD}n${RESET} Select none"
     echo ""
@@ -898,7 +988,13 @@ for i in "${!CATEGORIES[@]}"; do
     case "${RESULTS[$cat]}" in
         ok)   ok "${LABELS[$i]}" ;;
         fail) fail "${LABELS[$i]}" ;;
-        skip) warn "${LABELS[$i]}" ;;
+        skip)
+            if [[ "$(dep_state "$cat")" == "all" ]]; then
+                already "${LABELS[$i]}"
+            else
+                warn "${LABELS[$i]}"
+            fi
+            ;;
     esac
 done
 echo ""
