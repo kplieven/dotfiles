@@ -247,7 +247,7 @@ install_graphite_gtk_theme() {
 }
 
 install_tela_icon_theme() {
-    local theme_dir="$HOME/.local/share/icons/Tela-Dark"
+    local theme_dir="$HOME/.local/share/icons/Tela-dark"
     local install_dir="/tmp/Tela-icon-theme"
     if [[ -d "$theme_dir" ]]; then
         warn "Tela icon theme already installed"
@@ -874,7 +874,13 @@ install_desktop_x11() {
     link_i3_bin_scripts
 
     # i3lock-color / betterlockscreen
-    if ! command -v i3lock-color &>/dev/null; then
+    # i3lock-color installs its binary as `i3lock`, and apt's i3 pulls in the
+    # plain one, so the fork is identified by its copyright line, not the name.
+    # Captured rather than piped: under pipefail a non-zero --version would
+    # mask a match and rebuild a fork that is already there.
+    local i3lock_banner=""
+    i3lock_banner="$(i3lock --version 2>&1 || true)"
+    if [[ "$i3lock_banner" != *"Raymond Li"* ]]; then
         local i3lock_color_dir="/tmp/i3lock-color"
         rm -rf "$i3lock_color_dir"
         git clone --depth 1 https://github.com/Raymo111/i3lock-color.git "$i3lock_color_dir"
