@@ -756,9 +756,17 @@ install_rust() {
 # ---------------------------------------------------------------------------
 # Category: Neovim
 # ---------------------------------------------------------------------------
-install_nvim() {
-    info "Installing Neovim from source..."
+# The installed release tag, e.g. v0.12.4, or empty when nvim is absent. A
+# nightly reports v0.13.0-dev-... and so never matches a release tag.
+installed_nvim_version() {
+    local banner=""
+    command -v nvim &>/dev/null || return 0
+    banner="$(nvim --version 2>/dev/null | head -1 || true)"
+    [[ "$banner" == NVIM\ * ]] && echo "${banner#NVIM }"
+    return 0
+}
 
+install_nvim() {
     local fallback_version="v0.12.4"
     local latest_version=""
     if latest_version=$(curl -fsSL "https://api.github.com/repos/neovim/neovim/releases/latest" | grep -Po '"tag_name": *"\K[^"]*'); then
@@ -768,6 +776,27 @@ install_nvim() {
     fi
 
     local default_version="${latest_version:-$fallback_version}"
+    local current_version
+    current_version="$(installed_nvim_version)"
+
+    # Already on the latest release: there is nothing to build, so do not ask
+    # for a version either. Only a missing tree-sitter-cli is worth topping up.
+    if [[ -n "$current_version" && "$current_version" == "$default_version" ]]; then
+        already "Neovim $current_version is already the latest"
+        if have tree-sitter; then
+            warn "tree-sitter-cli already installed"
+            return 0
+        fi
+        install_cargo_tools tree-sitter-cli || return 1
+        return 0
+    fi
+
+    if [[ -n "$current_version" ]]; then
+        info "Neovim $current_version installed, $default_version available"
+    fi
+
+    info "Installing Neovim from source..."
+
     local nvim_version
     nvim_version=$(prompt "Neovim version to build" "$default_version")
 

@@ -9,7 +9,7 @@ Both scripts open an interactive menu — including when piped through `bash`, s
 
 Run `dependencies.sh` first if you want the machine prerequisites installed for you. It is intended for Ubuntu/Debian and can install shell, Rust, Neovim, Git, terminal, and desktop packages. Once the dotfiles are checked out it is also reachable as `config dependencies`, with the same menu and flags.
 
-Its menu marks what is already on the machine — ● installed, ◐ partly installed, ○ not found — and pre-ticks only the categories that are missing something, so a re-run tops up the gaps instead of reinstalling everything. Explicit flags are unaffected: `--all` still installs all of it.
+Its menu marks what is already on the machine — ● installed, ◐ partly installed, ○ not found — and pre-ticks only the categories that are missing something, so a re-run tops up the gaps instead of reinstalling everything. Explicit flags are unaffected: `--all` still installs all of it. Neovim is compared by version rather than by presence: selecting it when the installed release is already the latest skips the source build.
 
 `config-init.sh` then:
 
