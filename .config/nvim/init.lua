@@ -1,4 +1,5 @@
 require('config.options')
+require('config.filetypes')
 require('config.autocommands')
 require('config.diagnostics')
 require('config.keymaps')

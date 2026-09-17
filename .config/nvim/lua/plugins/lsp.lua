@@ -26,6 +26,7 @@ require('mason-lspconfig').setup({
         'pyright',
         'clangd',
         'rust_analyzer',
+        'docker_language_server',
     },
 })
 
