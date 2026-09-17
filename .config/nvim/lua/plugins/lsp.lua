@@ -4,28 +4,29 @@ vim.pack.add({
     'https://github.com/neovim/nvim-lspconfig',
 })
 
+-- Per-server overrides. These deep-merge on top of the defaults nvim-lspconfig
+-- ships in its `lsp/` directory, so only the differences belong here.
+-- Blink.cmp contributes capabilities globally via vim.lsp.config('*').
+vim.lsp.config('lua_ls', {
+    settings = {
+        Lua = {
+            diagnostics = {
+                globals = { 'vim' },
+            },
+        },
+    },
+})
+
 require('mason').setup()
--- Setup mason-lspconfig with the NEW API
+-- mason-lspconfig v2 calls vim.lsp.enable() for every installed server itself;
+-- there is no `handlers` option any more.
 require('mason-lspconfig').setup({
-    ensure_installed = { 'lua_ls', 'pyright', 'clangd', 'rust_analyzer' },
-    handlers = {
-        function(server_name)
-            require('lspconfig')[server_name].setup({
-                -- Blink.cmp handles capabilities automatically
-            })
-        end,
-        ['lua_ls'] = function()
-            require('lspconfig').lua_ls.setup({
-                settings = {
-                    Lua = {
-                        diagnostics = {
-                            globals = { 'vim' },
-                        },
-                    },
-                },
-            })
-        end,
-    }
+    ensure_installed = {
+        'lua_ls',
+        'pyright',
+        'clangd',
+        'rust_analyzer',
+    },
 })
 
 vim.api.nvim_create_autocmd('LspAttach', {
