@@ -574,14 +574,15 @@ interactive_menu() {
     local current=0
     local total="${#CATEGORIES[@]}"
 
+    # An EXIT trap, not RETURN: the cursor must come back on Ctrl-C and on
+    # any exit from inside the loop, not only when the menu returns.
     printf '\033[?25l'
-    trap 'printf "\033[?25h"' RETURN
+    trap 'printf "\033[?25h"' EXIT
 
     while true; do
         show_menu "$current"
         local key
         if ! IFS= read -rsn1 key </dev/tty; then
-            printf '\033[?25h'
             echo ""
             warn "Input closed — aborted, nothing installed."
             exit 0
@@ -616,6 +617,9 @@ interactive_menu() {
                 ;;
         esac
     done
+
+    printf '\033[?25h'
+    trap - EXIT
 }
 
 if [[ "$USE_FLAGS" == false ]]; then

@@ -361,13 +361,14 @@ interactive_menu() {
 
     local current=0 total="${#PACKAGES[@]}" key pkg
 
+    # An EXIT trap, not RETURN: the cursor must come back on Ctrl-C and on
+    # any exit from inside the loop, not only when the menu returns.
     printf '\033[?25l'
-    trap 'printf "\033[?25h"' RETURN
+    trap 'printf "\033[?25h"' EXIT
 
     while true; do
         show_menu "$current"
         if ! IFS= read -rsn1 key </dev/tty; then
-            printf '\033[?25h'
             echo ""
             warn "Input closed — aborted, nothing changed."
             exit 0
@@ -391,6 +392,9 @@ interactive_menu() {
             *) ;;
         esac
     done
+
+    printf '\033[?25h'
+    trap - EXIT
 }
 
 # ---------------------------------------------------------------------------
