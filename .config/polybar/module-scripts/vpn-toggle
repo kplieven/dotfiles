@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+main() {
+    if cato-sdp status 2>/dev/null | grep -q '^[[:space:]]*state[[:space:]]*=[[:space:]]*STATE_AUTHENTICATED[[:space:]]*$'; then
+        exec cato-sdp stop
+    else
+        exec cato-sdp start
+    fi
+}
+
+main
