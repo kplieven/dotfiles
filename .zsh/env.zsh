@@ -11,7 +11,7 @@ if [ -d "$FNM_PATH" ]; then
   eval "`fnm env`"
 fi
 
-export CDPATH=.:$HOME/repos/barco-labs/
+export CDPATH=.:$HOME/repos/barco-labs/:$HOME/repos/personal/
 
 source $HOME/.cargo/env
 
