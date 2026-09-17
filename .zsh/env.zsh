@@ -24,3 +24,5 @@ fi
 # VSCode shell integration
 [[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
 
+# Machine-local secrets (access keys, tokens) live in an untracked file.
+[[ -f "$HOME/.zsh/secrets.zsh" ]] && source "$HOME/.zsh/secrets.zsh"
