@@ -21,6 +21,8 @@ vim.o.completeopt = 'menuone,noselect'
 
 vim.o.termguicolors = true
 
+vim.o.winborder = 'rounded'
+
 vim.o.scrolloff = 8
 
 vim.o.updatetime = 750
