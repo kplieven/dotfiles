@@ -25,6 +25,7 @@ font pango:0xProto Nerd Font 8
 # fine, but the i3/root background cursor needs an explicit xsetroot call.
 exec --no-startup-id xrdb -merge ~/.Xresources
 exec --no-startup-id xsetroot -cursor_name left_ptr
+exec --no-startup-id setxkbmap -option caps:escape
 
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
