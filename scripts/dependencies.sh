@@ -744,6 +744,11 @@ install_rust() {
     # Common native deps needed by many Rust crates
     sudo apt-get install -y build-essential pkg-config cmake libdbus-1-dev
 
+    local cargo_env="${CARGO_HOME:-$HOME/.cargo}/env"
+    # Detect an existing installation even when Cargo is not yet on PATH.
+    # shellcheck disable=SC1090
+    [[ -f "$cargo_env" ]] && source "$cargo_env"
+
     if ! command -v rustup &>/dev/null; then
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y --no-modify-path
     else
@@ -751,8 +756,8 @@ install_rust() {
     fi
 
     # make cargo available in this session
-    # shellcheck disable=SC1091
-    [[ -f "$HOME/.cargo/env" ]] && source "$HOME/.cargo/env"
+    # shellcheck disable=SC1090
+    [[ -f "$cargo_env" ]] && source "$cargo_env"
 
     ok "Rust toolchain installed"
 }
