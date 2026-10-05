@@ -30,5 +30,6 @@
     "command": "node ~/.copilot/extensions/knowledge-tracking/statusline.mjs",
     "padding": 0
   },
-  "experimental": true
+  "experimental": true,
+  "autoTier": "balance"
 }
