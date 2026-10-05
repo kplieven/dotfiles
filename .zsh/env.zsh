@@ -5,10 +5,10 @@ export PATH="$LLVM_DIR/build/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 export PATH=$HOME/.opencode/bin:$PATH
 
-FNM_PATH="/home/karlie/.local/share/fnm"
+FNM_PATH="$HOME/.local/share/fnm"
 if [ -d "$FNM_PATH" ]; then
-  export PATH="/home/karlie/.local/share/fnm:$PATH"
-  eval "`fnm env`"
+    export PATH="$FNM_PATH:$PATH"
+    eval "$(fnm env --use-on-cd --shell zsh)"
 fi
 
 export CDPATH=.:$HOME/repos/barco-labs/:$HOME/repos/personal/

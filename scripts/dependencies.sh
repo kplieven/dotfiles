@@ -775,8 +775,7 @@ ensure_nvim_node() {
         fnm use default || return 1
     else
         info "No default Node version; installing Node LTS"
-        fnm install --lts || return 1
-        fnm use --lts || return 1
+        fnm install --lts --use || return 1
         default_node="$(fnm current)" || return 1
         fnm default "$default_node" || return 1
     fi
