@@ -6,6 +6,7 @@ require('nvim-treesitter').install({
     'c', 'cpp', 'lua', 'python', 'rust',
     'vim', 'vimdoc', 'query',
     'bash', 'glsl', 'markdown', 'markdown_inline',
+    'mermaid',
 })
 
 vim.api.nvim_create_autocmd('FileType', {

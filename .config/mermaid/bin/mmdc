@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+
+export PATH="${PATH#"$HOME/.config/mermaid/bin:"}"
+exec mmdc -p "$HOME/.config/mermaid/puppeteer.json" "$@"

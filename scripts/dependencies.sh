@@ -372,7 +372,7 @@ LABELS=(
     "Shell          — zsh, antigen, CLI tools (eza, ripgrep, bat, fd, dust, starship, bottom, rm-improved, cpx), set as default shell"
     "Build tools    — C/C++ compiler toolchain and build/debug utilities"
     "Rust toolchain — rustup, cargo, common native build dependencies"
-    "Neovim         — build from source, tree-sitter-cli, sync plugins"
+    "Neovim         — build from source, tree-sitter-cli, fnm/Node, Mermaid CLI"
     "Git tools      — lazygit"
     "Terminal       — kitty, JetBrains Mono Nerd Font, Symbols Nerd Font"
     "Docker         — Docker Engine and Compose plugin"
@@ -387,7 +387,7 @@ declare -A DETECT=(
     [shell]="zsh starship eza rg bat fd dust btm rip cpx $HOME/.zsh/antigen.zsh"
     [build-tools]="gcc clang cmake ninja meson gdb valgrind pkg-config"
     [rust]="rustup cargo"
-    [nvim]="nvim tree-sitter fnm"
+    [nvim]="nvim tree-sitter fnm node npm mmdc"
     [git]="git lazygit"
     [terminal]="kitty $HOME/.local/share/fonts/JetBrainsMonoNerdFont $HOME/.local/share/fonts/0xProtoNerdFont/0xProtoNerdFont*.ttf $HOME/.local/share/fonts/NerdFontsSymbolsOnly/*.ttf"
     [docker]="docker"
@@ -485,7 +485,7 @@ usage() {
     echo "  --shell            Zsh, antigen, CLI tools (eza, ripgrep, bat, fd, dust, starship, bottom, rm-improved, cpx)"
     echo "  --build-tools      C/C++ build toolchain and utilities"
     echo "  --rust             Rust toolchain (rustup, cargo)"
-    echo "  --nvim             Neovim (built from source), tree-sitter-cli"
+    echo "  --nvim             Neovim, tree-sitter-cli, fnm/Node, Mermaid CLI"
     echo "  --git              Lazygit"
     echo "  --terminal         Kitty terminal, JetBrains Mono Nerd Font, Symbols Nerd Font"
     echo "  --docker           Docker Engine and Compose plugin"
@@ -760,6 +760,39 @@ install_rust() {
 # ---------------------------------------------------------------------------
 # Category: Neovim
 # ---------------------------------------------------------------------------
+ensure_nvim_node() {
+    export PATH="$HOME/.local/share/fnm:$PATH"
+    if ! command -v fnm &>/dev/null; then
+        sudo apt-get install -y curl unzip || return 1
+        curl -fsSL https://fnm.vercel.app/install | bash || return 1
+        ok "fnm installed"
+    fi
+
+    local fnm_env default_node
+    fnm_env="$(fnm env --shell bash)" || return 1
+    eval "$fnm_env"
+    if default_node="$(fnm default)" && [[ -n "$default_node" ]]; then
+        fnm use default || return 1
+    else
+        info "No default Node version; installing Node LTS"
+        fnm install --lts || return 1
+        fnm use --lts || return 1
+        default_node="$(fnm current)" || return 1
+        fnm default "$default_node" || return 1
+    fi
+
+    if ! command -v node &>/dev/null || ! command -v npm &>/dev/null; then
+        fail "Node/npm unavailable after activating fnm's default version"
+        return 1
+    fi
+    if npm list -g --depth=0 @mermaid-js/mermaid-cli &>/dev/null; then
+        already "Mermaid CLI installed for Node $default_node"
+    else
+        npm install -g @mermaid-js/mermaid-cli || return 1
+        ok "Mermaid CLI installed for Node $default_node"
+    fi
+}
+
 # The installed release tag, e.g. v0.12.4, or empty when nvim is absent. A
 # nightly reports v0.13.0-dev-... and so never matches a release tag.
 installed_nvim_version() {
@@ -771,6 +804,8 @@ installed_nvim_version() {
 }
 
 install_nvim() {
+    ensure_nvim_node || return 1
+
     local fallback_version="v0.12.4"
     local latest_version=""
     if latest_version=$(curl -fsSL "https://api.github.com/repos/neovim/neovim/releases/latest" | grep -Po '"tag_name": *"\K[^"]*'); then
@@ -784,7 +819,7 @@ install_nvim() {
     current_version="$(installed_nvim_version)"
 
     # Already on the latest release: there is nothing to build, so do not ask
-    # for a version either. Only a missing tree-sitter-cli is worth topping up.
+    # for a version either. Node/Mermaid dependencies were checked above.
     if [[ -n "$current_version" && "$current_version" == "$default_version" ]]; then
         already "Neovim $current_version is already the latest"
         if have tree-sitter; then
@@ -806,17 +841,6 @@ install_nvim() {
 
     # build dependencies
     sudo apt-get install -y ninja-build gettext cmake unzip curl build-essential fzf
-
-    # fnm / node (needed for some plugins)
-    if ! command -v fnm &>/dev/null; then
-        curl -fsSL https://fnm.vercel.app/install | bash
-        export PATH="$HOME/.local/share/fnm:$PATH"
-        eval "$(fnm env)"
-        fnm install --lts
-        ok "fnm + Node LTS installed"
-    else
-        warn "fnm already installed"
-    fi
 
     # clone and build
     local build_dir="/tmp/neovim-build"

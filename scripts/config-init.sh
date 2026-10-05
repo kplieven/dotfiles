@@ -60,7 +60,7 @@ config() {
 PACKAGES=(shell nvim git terminal desktop-x11 desktop-wayland copilot agents)
 LABELS=(
     "Shell          — .zshrc, .zsh/, starship"
-    "Neovim         — .config/nvim/"
+    "Neovim         — .config/nvim/, .config/mermaid/"
     "Git            — .gitconfig, .gitconfig-barco, lazygit"
     "Terminal       — kitty"
     "Desktop (X11)  — i3, polybar, dunst, rofi, picom, betterlockscreen, wallpapers"
@@ -71,7 +71,7 @@ LABELS=(
 
 declare -A PATTERNS=(
     [shell]="/.zshrc /.zsh/ /.config/starship.toml"
-    [nvim]="/.config/nvim/"
+    [nvim]="/.config/nvim/ /.config/mermaid/"
     [git]="/.gitconfig /.gitconfig-barco /.config/lazygit/"
     [terminal]="/.config/kitty/"
     [desktop-x11]="/.config/i3/ /.config/polybar/ /.config/dunst/ /.config/rofi/ /.config/picom.conf /.config/betterlockscreen/ /.xsessionrc /Pictures/wallpapers/"

@@ -25,7 +25,7 @@ The menu comes pre-selected: on a first run from the dependencies detected on th
 | Package | Contents |
 | --- | --- |
 | `shell` | `.zshrc`, `.zsh/`, starship |
-| `nvim` | `.config/nvim/` |
+| `nvim` | `.config/nvim/`, `.config/mermaid/` |
 | `git` | `.gitconfig`, `.gitconfig-barco`, lazygit |
 | `terminal` | kitty |
 | `desktop-x11` | i3, polybar, dunst, rofi, picom, betterlockscreen, wallpapers |
@@ -47,6 +47,29 @@ config packages remove nvim     # remove it from $HOME
 Removing a package deletes its files from `$HOME` but keeps them in the repo, where they go on receiving updates — so re-adding it later brings back the current version. A package with uncommitted changes is refused rather than left half-removed.
 
 `config pull` and `config push` need no special handling: pulls update unselected files inside the repo without writing them to `$HOME`, and commits only ever see the packages you have checked out.
+
+## Mermaid in Neovim
+
+`config dependencies --nvim` activates fnm's default Node version (installing
+Node LTS when no default exists) and installs `@mermaid-js/mermaid-cli` using
+that version's npm. These dependencies are checked even when Neovim needs no
+source rebuild. Global npm packages belong to each Node version; rerun the
+command after changing fnm's default version.
+
+The Neovim package includes `.config/mermaid/bin/mmdc`, a wrapper used only on
+Neovim's PATH. It passes `.config/mermaid/puppeteer.json` to the real CLI for
+linting and inline rendering. Launch Neovim with fnm-managed Node on PATH.
+The CLI installation downloads Puppeteer's browser; Linux browser runtime
+libraries must also be available. Kitty supports inline graphics on Neovim
+0.12+, while chafa is an optional fallback. Browser preview does not need mmdc.
+
+The Mermaid config overrides the inline generator's default output to PNG,
+because upstream hands SVG directly to Kitty's raster-only image decoder.
+It reuses the plugin's generator and cleanup; explicit output paths, linting,
+and browser preview are unchanged.
+
+The Puppeteer config disables Chromium's sandbox to work on hosts where
+sandboxed launches fail. Use it only where needed and avoid untrusted diagrams.
 
 ## What gets loaded
 
