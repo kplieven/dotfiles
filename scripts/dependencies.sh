@@ -711,7 +711,13 @@ install_shell() {
             fail "Could not find zsh to set as the default shell"
             return 1
         fi
-        if ! chsh -s "$zsh_path"; then
+        if ! (
+            # PAM reads stdin, which is the script pipe under curl | bash.
+            if [[ ! -t 0 ]] && tty_available; then
+                exec </dev/tty || exit 1
+            fi
+            chsh -s "$zsh_path"
+        ); then
             fail "Could not set default shell to zsh"
             return 1
         fi

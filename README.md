@@ -11,7 +11,7 @@ Run `dependencies.sh` first if you want the machine prerequisites installed for 
 
 Its menu marks what is already on the machine — ● installed, ◐ partly installed, ○ not found — and pre-ticks only the categories that are missing something, so a re-run tops up the gaps instead of reinstalling everything. Explicit flags are unaffected: `--all` still installs all of it. Neovim is compared by version rather than by presence: selecting it when the installed release is already the latest skips the source build. Otherwise, the installer prompts for a release tag, defaulting to the detected latest release when you press Enter. The prompt remains visible when the script is piped through `bash`. Without an available terminal, it reports that it is using the default and continues without waiting for input. If release detection fails, the installer warns and uses its bundled fallback version as the default.
 
-Shell completeness also requires zsh as the account's configured login shell, even when all shell tools are installed. The installer checks the account database rather than the current session's `$SHELL`, so shell setup is pre-selected when needed without selecting a desktop, and reruns avoid unnecessary `chsh` calls.
+Shell completeness also requires zsh as the account's configured login shell, even when all shell tools are installed. The installer checks the account database rather than the current session's `$SHELL`, so shell setup is pre-selected when needed without selecting a desktop, and reruns avoid unnecessary `chsh` calls. When piped through `bash`, `chsh` reads its password from the terminal rather than the script pipe.
 
 `config-init.sh` then:
 

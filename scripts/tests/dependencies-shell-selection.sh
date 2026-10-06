@@ -49,6 +49,15 @@ chsh() {
         echo "Unexpected shell change: $*" >&2
         return 1
     }
+    if [[ "${TEST_AUTH:-}" == required ]]; then
+        local password
+        printf 'Password: ' >&2
+        if ! builtin read -rs password || [[ "$password" != test-password ]]; then
+            echo "mock chsh: PAM: Authentication failure" >&2
+            return 1
+        fi
+        printf '\n' >&2
+    fi
     if [[ "$TEST_CHANGE" == denied ]]; then
         echo "mock chsh: Permission denied" >&2
         return 1
@@ -94,6 +103,56 @@ read() {
 }
 EOF
 
+cat > "$tmp_dir/terminal.py" <<'EOF'
+import errno
+import os
+import pty
+import select
+import signal
+import sys
+import time
+
+mode, installer = sys.argv[1:]
+pid, fd = pty.fork()
+if pid == 0:
+    if mode == "curl-pipe":
+        os.execvp("bash", ["bash", "-c", 'cat "$1" | bash -s -- --shell', "bash", installer])
+    os.execvp("bash", ["bash", installer, "--shell"])
+
+output = bytearray()
+answered = False
+finished = False
+try:
+    deadline = time.monotonic() + 5
+    while time.monotonic() < deadline:
+        if not select.select([fd], [], [], max(0, deadline - time.monotonic()))[0]:
+            break
+        try:
+            chunk = os.read(fd, 4096)
+        except OSError as error:
+            if error.errno != errno.EIO:
+                raise
+            break
+        if not chunk:
+            break
+        output.extend(chunk)
+        if not answered and b"Password: " in output:
+            os.write(fd, b"test-password\n")
+            answered = True
+    exited, status = os.waitpid(pid, os.WNOHANG)
+    if not exited:
+        raise AssertionError("installer did not finish after password input")
+    finished = True
+    assert os.waitstatus_to_exitcode(status) == 0, "installer failed"
+    assert answered, "password prompt was not displayed"
+finally:
+    if not finished:
+        os.kill(pid, signal.SIGKILL)
+        os.waitpid(pid, 0)
+    os.close(fd)
+    sys.stdout.write(output.decode(errors="replace"))
+EOF
+
 fail_case() {
     cat "$output" "$log" >&2
     echo "FAIL: $name: $*" >&2
@@ -106,12 +165,16 @@ run_case() {
     printf '%s\n' "$account" > "$account_file"
     : > "$log"
     local -a runner=(bash "$script_dir/dependencies.sh" --shell)
+    local auth=none
     if [[ "$mode" == menu ]]; then
         runner=(script -q -e -c "bash '$script_dir/dependencies.sh'" /dev/null)
+    elif [[ "$mode" == terminal || "$mode" == curl-pipe ]]; then
+        runner=(python3 "$tmp_dir/terminal.py" "$mode" "$script_dir/dependencies.sh")
+        auth=required
     fi
     if ! HOME="$tmp_dir/home" PATH=/usr/bin:/bin SHELL="$environment" USER=wronguser \
         BASH_ENV="$tmp_dir/mocks.sh" TEST_LOG="$log" TEST_ACCOUNT="$account_file" \
-        TEST_CHANGE="$change" timeout 10 "${runner[@]}" </dev/null >"$output" 2>&1; then
+        TEST_CHANGE="$change" TEST_AUTH="$auth" timeout 10 "${runner[@]}" </dev/null >"$output" 2>&1; then
         fail_case "installer failed or waited for input"
         return 1
     fi
@@ -217,4 +280,7 @@ run_case chsh-denied flag /bin/bash /bin/bash denied || failed=1
 run_case account-lookup-failed flag /bin/bash /usr/bin/zsh lookup-failed || failed=1
 run_case account-record-missing flag /bin/bash /usr/bin/zsh empty-record || failed=1
 run_case zsh-unavailable flag /bin/bash /bin/bash zsh-unavailable || failed=1
+run_case terminal-password terminal /bin/bash /bin/bash ok || failed=1
+run_case curl-pipe-password curl-pipe /bin/bash /bin/bash ok || failed=1
+run_case curl-pipe-password-denied curl-pipe /bin/bash /bin/bash denied || failed=1
 exit "$failed"
