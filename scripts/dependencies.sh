@@ -46,13 +46,25 @@ already() { echo -e "${GREEN}${BOLD}[HAVE]${RESET}  $*"; }
 # User input helper — works even when stdin is a pipe (reads from /dev/tty)
 # ---------------------------------------------------------------------------
 prompt() {
-    local message="$1" default="$2" reply
-    if [[ -t 0 ]]; then
-        read -rp "$(echo -e "${BOLD}${message}${RESET} [${default}]: ")" reply
-    else
-        read -rp "$(echo -e "${BOLD}${message}${RESET} [${default}]: ")" reply </dev/tty 2>/dev/null || reply=""
+    local message="$1" default="$2" reply input_fd=0 status=0
+    if [[ ! -t 0 ]]; then
+        if ! { exec {input_fd}</dev/tty; } 2>/dev/null; then
+            warn "No terminal available; using $default for $message" >&2
+            printf '%s\n' "$default"
+            return 0
+        fi
     fi
-    echo "${reply:-$default}"
+    # stdout is captured by the caller; only terminal-open errors are suppressed.
+    printf '%b%s%b [%s]: ' "$BOLD" "$message" "$RESET" "$default" >&2
+    IFS= read -r -u "$input_fd" reply || status=$?
+    if [[ "$input_fd" != 0 ]]; then
+        exec {input_fd}<&-
+    fi
+    if [[ "$status" != 0 ]]; then
+        fail "Could not read input for $message" >&2
+        return 1
+    fi
+    printf '%s\n' "${reply:-$default}"
 }
 
 confirm() {
@@ -407,9 +419,23 @@ have() {
     fi
 }
 
+configured_login_shell() {
+    local account login_shell
+    if ! account="$(getent passwd "$(id -u)")"; then
+        fail "Could not determine configured login shell from the account database" >&2
+        return 1
+    fi
+    login_shell="${account##*:}"
+    if [[ -z "$account" || "$login_shell" != /* ]]; then
+        fail "Account database returned no valid configured login shell" >&2
+        return 1
+    fi
+    printf '%s\n' "$login_shell"
+}
+
 declare -A DEP_PRESENT DEP_TOTAL
 probe_installed() {
-    local cat probe present total
+    local cat probe present total login_shell
     # Split on whitespace only: the path probes hold globs that `have` expands,
     # and letting the shell expand them here would inflate the totals.
     set -f
@@ -420,6 +446,12 @@ probe_installed() {
             total=$(( total + 1 ))
             if have "$probe"; then present=$(( present + 1 )); fi
         done
+        if [[ "$cat" == shell ]]; then
+            total=$(( total + 1 ))
+            if login_shell="$(configured_login_shell)" && [[ "${login_shell##*/}" == zsh ]]; then
+                present=$(( present + 1 ))
+            fi
+        fi
         DEP_PRESENT[$cat]=$present
         DEP_TOTAL[$cat]=$total
     done
@@ -672,8 +704,17 @@ install_shell() {
     fi
 
     # set zsh as default shell
-    if [[ "$SHELL" != *"zsh"* ]]; then
-        chsh -s "$(which zsh)"
+    local login_shell zsh_path
+    login_shell="$(configured_login_shell)" || return 1
+    if [[ "${login_shell##*/}" != zsh ]]; then
+        if ! zsh_path="$(command -v zsh)"; then
+            fail "Could not find zsh to set as the default shell"
+            return 1
+        fi
+        if ! chsh -s "$zsh_path"; then
+            fail "Could not set default shell to zsh"
+            return 1
+        fi
         ok "Default shell set to zsh"
     else
         warn "zsh is already the default shell"
@@ -822,8 +863,8 @@ install_nvim() {
     local current_version
     current_version="$(installed_nvim_version)"
 
-    # Already on the latest release: there is nothing to build, so do not ask
-    # for a version either. Node/Mermaid dependencies were checked above.
+    # Already on the latest release: there is nothing to build.
+    # Node/Mermaid dependencies were checked above.
     if [[ -n "$current_version" && "$current_version" == "$default_version" ]]; then
         already "Neovim $current_version is already the latest"
         if have tree-sitter; then
@@ -841,7 +882,7 @@ install_nvim() {
     info "Installing Neovim from source..."
 
     local nvim_version
-    nvim_version=$(prompt "Neovim version to build" "$default_version")
+    nvim_version=$(prompt "Neovim version to build" "$default_version") || return 1
 
     # build dependencies
     sudo apt-get install -y ninja-build gettext cmake unzip curl build-essential fzf
