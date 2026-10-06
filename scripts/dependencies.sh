@@ -790,6 +790,9 @@ install_rust() {
     # shellcheck disable=SC1090
     [[ -f "$cargo_env" ]] && source "$cargo_env"
 
+    # Make rustup's destination visible before its installer checks PATH.
+    export PATH="${CARGO_HOME:-$HOME/.cargo}/bin:$PATH"
+
     if ! command -v rustup &>/dev/null; then
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | bash -s -- -y --no-modify-path
     else
