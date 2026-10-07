@@ -48,22 +48,27 @@ ipv4_for_iface() {
 }
 
 wifi_ssid() {
-    local iface="$1"
-    if command -v iwctl >/dev/null 2>&1; then
-        iwctl station "$iface" show 2>/dev/null | grep "Connected network" | awk '{print $NF}'
-        return 0
+    local iface="$1" ssid=""
+
+    # Query the kernel first so this works regardless of which daemon (NetworkManager, iwd) manages the link.
+    if command -v iw >/dev/null 2>&1; then
+        ssid="$(iw dev "$iface" link 2>/dev/null | sed -n 's/^[[:space:]]*SSID: //p' | head -n1)"
     fi
-    if command -v iwgetid >/dev/null 2>&1; then
-        iwgetid "$iface" --raw 2>/dev/null || true
-        return 0
+    if [[ -z "$ssid" ]] && command -v iwgetid >/dev/null 2>&1; then
+        ssid="$(iwgetid "$iface" --raw 2>/dev/null || true)"
     fi
-    echo ""
+    if [[ -z "$ssid" ]] && command -v iwctl >/dev/null 2>&1; then
+        ssid="$(iwctl station "$iface" show 2>/dev/null | sed -n 's/^.*Connected network[[:space:]]*//p' | sed 's/[[:space:]]*$//' | head -n1)"
+    fi
+    echo "$ssid"
 }
 
 show_ethernet() {
     local eth_iface eth_ip
 
     if ! eth_iface="$(first_connected_ethernet_iface)"; then
+        # polybar keeps stale output unless a line is printed; an empty line hides the module
+        echo ""
         exit 0
     fi
 
@@ -79,6 +84,7 @@ show_wifi() {
     local wlan_iface ssid
 
     if first_connected_ethernet_iface >/dev/null; then
+        echo ""
         exit 0
     fi
 
