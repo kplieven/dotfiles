@@ -25,6 +25,7 @@
     "showAiUsed": true
   },
   "model": "auto",
+  "defaultPermissionMode": "assisted",
   "statusLine": {
     "type": "command",
     "command": "node ~/.copilot/extensions/knowledge-tracking/statusline.mjs",
